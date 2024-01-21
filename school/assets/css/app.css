@@ -3,3 +3,16 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+
+.primary-button {
+  @apply bg-blue-500 p-2 rounded shadow text-white font-medium;
+}
+
+input[type="text"],
+input[type="password"] {
+  @apply rounded-md;
+}
+
+body {
+  font-family: "Raleway", sans-serif;
+}
