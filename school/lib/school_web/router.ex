@@ -23,6 +23,8 @@ defmodule SchoolWeb.Router do
     get "/", PageController, :home
     get "/signup", SignupPage.PageController, :home
     post "/signup", SignupPage.PageController, :handle_signup
+    get "/login", LoginPage.PageController, :home
+    post "/login", LoginPage.PageController, :login
   end
 
   # Other scopes may use custom stacks.
@@ -66,11 +68,26 @@ defmodule SchoolWeb.Router do
   scope "/", SchoolWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    live_session :require_authenticated_user,
-      on_mount: [{SchoolWeb.UserAuth, :ensure_authenticated}] do
-      live "/users/settings", UserSettingsLive, :edit
-      live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
-    end
+
+    get "/parent", ParentPage.PageController, :home
+
+    # live_session :require_authenticated_user,
+    #   on_mount: [{SchoolWeb.UserAuth, :ensure_authenticated}] do
+    #   live "/users/settings", UserSettingsLive, :edit
+    #   live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+    # end
+  end
+
+  scope "/", SchoolWeb do
+    pipe_through [:browser, :require_authenticated_user, :require_school_user]
+
+    get "/school/setup", SchoolAdministration.SchoolSetup.PageController, :home
+    post "/school/setup", SchoolAdministration.SchoolSetup.PageController, :setup
+
+    get "/school/dash", SchoolAdministration.SchoolDash.PageController, :home
+    get "/school/vendors", SchoolAdministration.SchoolDash.PageController, :vendors
+    get "/school/vendors/create", SchoolAdministration.SchoolDash.PageController, :create_vendor
+    post "/school/vendors/create", SchoolAdministration.SchoolDash.PageController, :create_vendor
   end
 
   scope "/", SchoolWeb do
@@ -78,10 +95,10 @@ defmodule SchoolWeb.Router do
 
     delete "/users/log_out", UserSessionController, :delete
 
-    live_session :current_user,
-      on_mount: [{SchoolWeb.UserAuth, :mount_current_user}] do
-      live "/users/confirm/:token", UserConfirmationLive, :edit
-      live "/users/confirm", UserConfirmationInstructionsLive, :new
-    end
+    # live_session :current_user,
+    #   on_mount: [{SchoolWeb.UserAuth, :mount_current_user}] do
+    #   live "/users/confirm/:token", UserConfirmationLive, :edit
+    #   live "/users/confirm", UserConfirmationInstructionsLive, :new
+    # end
   end
 end

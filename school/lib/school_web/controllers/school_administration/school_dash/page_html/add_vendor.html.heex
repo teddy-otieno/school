@@ -1,0 +1,24 @@
+
+
+<div class="p-4 flex items-center justify-center h-screen">
+	<form
+		action={~p"/school/setup"}
+		method="POST"
+		class="flex flex-col gap-4 shadow p-8 rounded w-full mx-2 md:w-1/2 lg:w-1/2"
+		enctype="multipart/form-data" >
+		<h1>Add new vendor</h1>
+		<input type="text" name="vendor_name" placeholder="Vendor Name" required />
+		<input type="number" name="till_number" placeholder="Till Number" required />
+
+		<h1>Account Details</h1>
+		<input type="text" name="first_name" placeholder="First Name" required />
+		<input type="text" name="last_name" placeholder="Last Name" required />
+		<input type="text" name="email" placeholder="Email Address" required />
+		<input type="text" name="phone_number" placeholder="Phone Number" required />
+		<input type="password" name="password" placeholder="Password" required />
+		<input type="password" name="confirm_password" placeholder="Confirm Password" required />
+		<input type="submit" name="submit" value="Create Vendor" class="primary-button" />
+		<input type="hidden" name="_csrf_token" value={@token} />
+		<input type="hidden" name="type" value={@type} />
+	</form>
+</div>

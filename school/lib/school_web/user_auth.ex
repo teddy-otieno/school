@@ -211,6 +211,19 @@ defmodule SchoolWeb.UserAuth do
     end
   end
 
+  def require_school_user(conn, _opts) do
+    with %Accounts.User{is_school: true} <- conn.assigns[:current_user] do
+      conn
+    else
+      other ->
+        IO.inspect other
+        conn
+          |> put_flash(:error, "Unauthorized")
+          |> redirect(to: ~p"/login")
+          |> halt()
+    end
+  end
+
   defp put_token_in_session(conn, token) do
     conn
     |> put_session(:user_token, token)

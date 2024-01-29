@@ -1,0 +1,19 @@
+<div class="h-screen flex flex-col items-center justify-center gap-2">
+  <form
+    action={~p"/school/setup"}
+    method="POST"
+    class="flex flex-col gap-4 shadow p-8 rounded w-full mx-2 md:w-1/2 lg:w-1/4"
+    enctype="multipart/form-data"
+  >
+    <h1 class="font-bold text-lg text-blue-500 text-center">Setup School Account</h1>
+    <input type="text" name="name" placeholder="Name" required />
+    <input type="text" name="address" placeholder="Address" required />
+    <textarea name="about" placeholder="Bio" />
+    <input type="submit" name="submit" value="Submit" class="primary-button" />
+    <input type="hidden" name="_csrf_token" value={@token} />
+
+	<div :if={@message}>
+		<p class="text-red-300 font-medium text-center"><%=@message%></p>
+	</div>
+  </form>
+</div>

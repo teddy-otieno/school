@@ -5,9 +5,10 @@ defmodule School.Accounts.User do
   schema "users" do
     field :first_name, :string
     field :last_name, :string
-    field :is_parent, :boolean, default: false
-    field :is_school, :boolean, default: false
-    field :is_admin, :boolean, default: false
+    field :is_parent, :boolean,
+    field :is_school, :boolean,
+    field :is_admin, :boolean, 
+    field :is_vendor, :boolean,
     field :phone_number, :string
 
     field :email, :string
@@ -43,7 +44,8 @@ defmodule School.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:first_name, :last_name, :phone_number, :email, :password])
+    |> cast(attrs, [:first_name, :last_name, :phone_number, :email, :password, :is_parent, :is_school, :is_admin, :is_vendor])
+    |> validate_required([:last_name, :phone_number, :email, :password, :is_parent, :is_school, :is_admin, :is_vendor])
     |> validate_email(opts)
     |> validate_password(opts)
   end
