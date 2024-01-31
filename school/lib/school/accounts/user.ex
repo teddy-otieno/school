@@ -5,10 +5,10 @@ defmodule School.Accounts.User do
   schema "users" do
     field :first_name, :string
     field :last_name, :string
-    field :is_parent, :boolean,
-    field :is_school, :boolean,
-    field :is_admin, :boolean, 
-    field :is_vendor, :boolean,
+    field :is_parent, :boolean
+    field :is_school, :boolean
+    field :is_admin, :boolean
+    field :is_vendor, :boolean
     field :phone_number, :string
 
     field :email, :string

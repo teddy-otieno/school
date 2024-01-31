@@ -1,4 +1,33 @@
-<div class="p-4">
-  <p>Vendors</p>
-  <a href={~p"/school/vendors/create"} class="primary-button">Add Vendor</a>
+<div class="p-8 flex flex-col gap-8">
+  <div class="flex justify-between">
+    <h4>Vendors</h4>
+    <a href={~p"/school/vendors/create"} class="primary-button">Add Vendor</a>
+  </div>
+
+  <div class="shadow-sm rounded">
+    <table class="table-auto w-full border-collapse">
+      <thead>
+        <tr>
+          <td>Name</td>
+          <td>Till Number</td>
+          <td>Phone Number</td>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for vendor <- @vendor_list do %>
+          <tr>
+            <td>
+              <%= vendor.vendor_name %>
+            </td>
+            <td>
+              <%= vendor.till_number %>
+            </td>
+            <td>
+              <%= vendor.user.phone_number %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>
