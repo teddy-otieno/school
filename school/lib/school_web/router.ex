@@ -27,10 +27,7 @@ defmodule SchoolWeb.Router do
     post "/login", LoginPage.PageController, :login
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", SchoolWeb do
-  #   ipe_through :api
-  # end
+
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:school, :dev_routes) do
@@ -100,5 +97,10 @@ defmodule SchoolWeb.Router do
     #   live "/users/confirm/:token", UserConfirmationLive, :edit
     #   live "/users/confirm", UserConfirmationInstructionsLive, :new
     # end
+  end
+
+    #Other scopes may use custom stacks.
+  scope "/api", SchoolWeb do
+    pipe_through :api
   end
 end
