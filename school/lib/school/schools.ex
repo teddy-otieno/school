@@ -10,6 +10,8 @@ defmodule School.Schools do
   alias School.Accounts.User
   alias School.Repo
   alias School.School.Vendor
+  alias School.School.Class
+  alias School.School.Student
   alias School.School
 
   def setup_school(%User{} = user, params) do
@@ -60,5 +62,31 @@ defmodule School.Schools do
 
     Repo.one!(query)
     |> dbg
+  end
+
+  def create_new_class(params, %School{id: id}) do
+    %Class{}
+    |> Class.changeset(Map.put(params, "school_id", id))
+    |> Repo.insert()
+  end
+
+  def list_classes_for_user(%School{id: id}) do
+    query = from c in Class, where: c.school_id == ^id
+
+    query
+    |> Repo.all()
+  end
+
+  def create_student(attrs, %School{id: id}) do
+    %Student{}
+    |> Student.changeset(Map.put(attrs, "school_id", id))
+    |> Repo.insert()
+  end
+
+  def list_students(%School{id: id}) do
+    query = from s in Student, where: s.school_id == ^id, preload: [:class]
+
+    query
+    |> Repo.all()
   end
 end

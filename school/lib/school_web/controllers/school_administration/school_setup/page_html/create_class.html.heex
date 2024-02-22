@@ -1,0 +1,20 @@
+<main class="p-8">
+<form action={~p"/school/classes/create"} metho="POST" enctype="multipart/form-data" class='flex flex-col gap-4'>
+	<h1>Create Class</h1>
+	<div class="form-label-group">
+		<label for="type">Select Class or Form</label>
+		<select name="type" id="type">
+			<option value="form">Form</option>
+			<option value="class">Class</option>
+		</select>
+	</div>
+
+	<div class='form-label-group'>
+		<label>Label</label>
+		<input type="text" name="label" placeholder="Class Label" />
+	</div>
+
+	<input type="hidden" name="_csrf_token" value={@token} />
+	<input type="submit" name="create_class" value="Create" class='primary-button' />
+</form>
+</main>

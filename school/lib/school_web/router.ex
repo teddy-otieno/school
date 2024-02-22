@@ -27,8 +27,6 @@ defmodule SchoolWeb.Router do
     post "/login", LoginPage.PageController, :login
   end
 
-
-
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:school, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
@@ -65,7 +63,6 @@ defmodule SchoolWeb.Router do
   scope "/", SchoolWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-
     get "/parent", ParentPage.PageController, :home
 
     # live_session :require_authenticated_user,
@@ -80,11 +77,19 @@ defmodule SchoolWeb.Router do
 
     get "/school/setup", SchoolAdministration.SchoolSetup.PageController, :home
     post "/school/setup", SchoolAdministration.SchoolSetup.PageController, :setup
+    get "/school/classes", SchoolAdministration.SchoolSetup.PageController, :classes
+    get "/school/classes/create", SchoolAdministration.SchoolSetup.PageController, :create_class
 
     get "/school/dash", SchoolAdministration.SchoolDash.PageController, :home
     get "/school/vendors", SchoolAdministration.SchoolDash.PageController, :vendors
     get "/school/vendors/create", SchoolAdministration.SchoolDash.PageController, :create_vendor
     post "/school/vendors/create", SchoolAdministration.SchoolDash.PageController, :create_vendor
+    get "/school/students", SchoolAdministration.SchoolDash.PageController, :students
+    get "/school/students/create", SchoolAdministration.SchoolDash.PageController, :create_student
+
+    post "/school/students/create",
+         SchoolAdministration.SchoolDash.PageController,
+         :create_student
   end
 
   scope "/", SchoolWeb do
@@ -99,8 +104,10 @@ defmodule SchoolWeb.Router do
     # end
   end
 
-    #Other scopes may use custom stacks.
+  # Other scopes may use custom stacks.
   scope "/api", SchoolWeb do
     pipe_through :api
+
+    post "/parents/signup", ParentPage.PageController, :signup
   end
 end

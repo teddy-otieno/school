@@ -4,22 +4,18 @@ defmodule SchoolWeb.PageController do
   def home(conn, _params) do
     user = conn.assigns[:current_user]
 
+    unless is_nil(user) do
+      redirect_to_user_dashboard(conn, user)
+
+    else
+      render(conn, :home, layout: false, name: "Teddy")
+    end
+
     conn |> redirect_to_user_dashboard(user)
   end
 
-  defp redirect_to_user_dashboard(conn, nil) do
-    render(conn, :home, layout: false, name: "Teddy")
-  end
-
   defp redirect_to_user_dashboard(conn, user) do
-    case user do
-      %{is_school: true} ->
-        conn |> redirect(to: ~p"/school/dash")
-
-      _ ->
-        conn
-        |> render(:home, layout: false, name: "SOmething else")
-    end
-
+    conn
+    |> redirect(to: School.Utils.redirect_route_based_on_user_type(user))
   end
 end

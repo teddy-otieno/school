@@ -6,7 +6,8 @@ defmodule SchoolWeb.SchoolAdministration.SchoolDash.PageController do
 
   def home(conn, _params) do
     conn
-    |> render(:home, layout: false)
+    |> put_layout(html: :layout)
+    |> render(:home)
   end
 
   def vendors(conn, _params) do
@@ -55,5 +56,55 @@ defmodule SchoolWeb.SchoolAdministration.SchoolDash.PageController do
     conn
     |> put_layout(html: :layout)
     |> render(:add_vendor, token: token, type: "VENDOR")
+  end
+
+  def students(conn, _params) do
+    students =
+      conn.assigns[:current_user]
+      |> Schools.fetch_school_record_for_user()
+      |> Schools.list_students()
+
+    conn
+    |> put_layout(html: :layout)
+    |> render(:students, students: students)
+  end
+
+  def create_student(conn, %{"create_student" => _} = params) do
+    school =
+      conn.assigns[:current_user]
+      |> Schools.fetch_school_record_for_user()
+
+    with {:ok, student} <- Schools.create_student(params, school) do
+      dbg(student)
+
+      conn
+      |> redirect(to: ~p"/school/students")
+    else
+      {:error, changeset} ->
+        dbg(changeset)
+        token = Plug.CSRFProtection.get_csrf_token()
+
+        classes_or_forms =
+          conn.assigns[:current_user]
+          |> Schools.fetch_school_record_for_user()
+          |> Schools.list_classes_for_user()
+
+        conn
+        |> put_layout(html: :layout)
+        |> render(:create_student, token: token, classes: classes_or_forms)
+    end
+  end
+
+  def create_student(conn, _params) do
+    token = Plug.CSRFProtection.get_csrf_token()
+
+    classes_or_forms =
+      conn.assigns[:current_user]
+      |> Schools.fetch_school_record_for_user()
+      |> Schools.list_classes_for_user()
+
+    conn
+    |> put_layout(html: :layout)
+    |> render(:create_student, token: token, classes: classes_or_forms)
   end
 end
