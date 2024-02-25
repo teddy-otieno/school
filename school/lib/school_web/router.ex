@@ -109,5 +109,16 @@ defmodule SchoolWeb.Router do
     pipe_through :api
 
     post "/parents/signup", ParentPage.PageController, :signup
+    post "/login", LoginPage.PageController, :mobile_login
+  end
+
+  pipeline :api_auth do
+    plug School.AuthAccessPipeline
+  end
+
+  scope "/api/parents", SchoolWeb do
+    pipe_through [:api, :api_auth, :require_parent_auth]
+
+    get "/students", ParentPage.StudentsController, :index
   end
 end

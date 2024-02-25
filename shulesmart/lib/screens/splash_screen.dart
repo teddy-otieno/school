@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:shulesmart/screens/signup_screen.dart';
+import 'package:shulesmart/screens/login_screen.dart';
+import 'package:shulesmart/screens/parents/dash.dart';
+import 'package:shulesmart/utils/store.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,12 +19,30 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+  }
 
-    Timer(const Duration(seconds: 6), () {
-      Navigator.push(
-        context,
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+
+    var state = StoreProvider.of<AppState>(context).state;
+
+    log(state.toJson().toString());
+
+    Timer(const Duration(seconds: 2), () {
+      if (state case AppState(session: var session) when session != null) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const ParentDashboard(),
+          ),
+        );
+        return;
+      }
+
+      Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const ParentSignupScreen(),
+          builder: (context) => const LoginScreen(),
         ),
       );
     });

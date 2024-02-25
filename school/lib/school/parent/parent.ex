@@ -5,7 +5,6 @@ defmodule School.Parent.Parent do
   alias School.Accounts.User
 
   schema "parents" do
-
     belongs_to :user, User
     timestamps(type: :utc_datetime)
   end
@@ -13,7 +12,7 @@ defmodule School.Parent.Parent do
   @doc false
   def changeset(parent, attrs) do
     parent
-    |> cast(attrs, [:user_Id])
+    |> cast(attrs, [:user_id])
     |> validate_required([:user_id])
   end
 end

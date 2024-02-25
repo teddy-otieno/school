@@ -4,6 +4,7 @@ defmodule SchoolWeb.UserAuth do
   import Plug.Conn
   import Phoenix.Controller
 
+  alias School.Accounts.User
   alias School.Accounts
 
   # Make the remember me cookie valid for 60 days.
@@ -211,16 +212,31 @@ defmodule SchoolWeb.UserAuth do
     end
   end
 
+  def require_parent_auth(conn, _opts) do
+    case School.Guardian.Plug.current_resource(conn) do
+      %User{is_parent: true} ->
+        conn
+
+      _ ->
+        message = Jason.encode(%{message: "NOPE"})
+
+        conn
+        |> send_resp(403, message)
+        |> halt()
+    end
+  end
+
   def require_school_user(conn, _opts) do
     with %Accounts.User{is_school: true} <- conn.assigns[:current_user] do
       conn
     else
       other ->
-        IO.inspect other
+        IO.inspect(other)
+
         conn
-          |> put_flash(:error, "Unauthorized")
-          |> redirect(to: ~p"/login")
-          |> halt()
+        |> put_flash(:error, "Unauthorized")
+        |> redirect(to: ~p"/login")
+        |> halt()
     end
   end
 

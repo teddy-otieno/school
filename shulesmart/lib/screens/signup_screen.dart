@@ -23,12 +23,13 @@ class _ParentSignupScreenState extends State<ParentSignupScreen> {
   final _confirm_password_controller = TextEditingController();
 
   void _handle_clicked() async {
-    if (_form_key.currentState!.validate()) {
+    if (!_form_key.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Creating Account"),
+          content: Text("Form Invalid"),
         ),
       );
+      return;
     }
 
     var result = await send_parent_information({
@@ -39,6 +40,13 @@ class _ParentSignupScreenState extends State<ParentSignupScreen> {
       "password": _password_controller.text,
       "confirm_password": _confirm_password_controller.text
     });
+
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text((result ? "Success" : "Failed")),
+      ),
+    );
   }
 
   @override
