@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:shulesmart/models/student.dart';
 import 'package:shulesmart/repository/conn_client.dart';
 import 'package:shulesmart/utils/utils.dart';
 
@@ -67,5 +68,31 @@ void assign_parent_to_id(int student_id) async {
     log(response.body);
   } catch (e) {
     log(e.toString());
+  }
+}
+
+Future<Result<List<Student>, String>>
+    fetch_students_belonging_to_parent() async {
+  var client = ApiClient.get_instance();
+
+  try {
+    var response = await client.get_with_auth("/api/parents/students/");
+
+    if (response.statusCode != 200) {
+      return Result.err("Something went wrong");
+    }
+
+    log(response.body);
+    return Result.ok(
+      List.from(
+        jsonDecode(response.body)["data"].map((e) {
+          var x = Student.fromJson(e);
+          return x;
+        }).toList(),
+      ),
+    );
+  } catch (e) {
+    log(e.toString());
+    return Result.err("No Internet Connection");
   }
 }
