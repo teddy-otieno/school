@@ -63,6 +63,8 @@ defmodule School.Parents do
   def assign_to_parent(%Parent{id: parent_id}, student_id) do
     query = from s in Student, where: s.id == ^student_id
 
+    # Setup the accounts
+
     student =
       Repo.get(query, student_id)
       |> dbg

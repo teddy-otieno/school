@@ -28,7 +28,6 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
 
     _load_students();

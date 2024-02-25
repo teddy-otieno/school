@@ -65,9 +65,12 @@ config :phoenix, :json_library, Jason
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
 
-
-config :school, School.Guardian, issuer: "school", secret_key: "MUekfTe23PDTbkNsOk3CmfcatoBrgqThh5vqQMLEbXVVzRqZODgxTFEeIjdLq0s2"
+config :school, School.Guardian,
+  issuer: "school",
+  secret_key: "MUekfTe23PDTbkNsOk3CmfcatoBrgqThh5vqQMLEbXVVzRqZODgxTFEeIjdLq0s2"
 
 config :school, School.AuthAccessPipeline,
   module: School.Guardian,
   error_handler: School.AuthErrorHandler
+
+config :money, default_currency: :KES
