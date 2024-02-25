@@ -28,8 +28,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
     var state = StoreProvider.of<AppState>(context).state;
 
-    log(state.toJson().toString());
-
     Timer(const Duration(seconds: 2), () {
       if (state case AppState(session: var session) when session != null) {
         Navigator.of(context).push(

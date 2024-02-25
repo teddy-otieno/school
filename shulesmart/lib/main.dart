@@ -5,6 +5,7 @@ import 'package:redux_persist/redux_persist.dart';
 import 'package:redux_persist_flutter/redux_persist_flutter.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+import 'package:shulesmart/repository/conn_client.dart';
 
 import 'package:shulesmart/screens/splash_screen.dart';
 import 'package:shulesmart/utils/store.dart';
@@ -18,6 +19,11 @@ void main() async {
   );
 
   final initial_state = await persistor.load();
+
+  if (initial_state != null) {
+    ApiClient.get_instance().init(initial_state.session?.token);
+  }
+
   final store = Store<AppState>(
     reducer,
     initialState: initial_state ?? AppState(),

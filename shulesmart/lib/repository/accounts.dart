@@ -8,10 +8,12 @@ import 'package:shulesmart/repository/conn_client.dart';
 import 'package:shulesmart/utils/utils.dart';
 
 Future<bool> send_parent_information(Map<String, dynamic> body) async {
+  var client = ApiClient.get_instance();
+
   try {
     var response = await client.post(
-      create_path("/api/parents/signup"),
-      body: body,
+      "/api/parents/signup",
+      body,
     );
 
     log(response.statusCode.toString());
@@ -25,8 +27,10 @@ Future<bool> send_parent_information(Map<String, dynamic> body) async {
 Future<Result<UserSession, String>> send_login_information(
   Map<String, dynamic> body,
 ) async {
+  var client = ApiClient.get_instance();
+
   try {
-    var response = await client.post(create_path("/api/login"), body: body);
+    var response = await client.post("/api/login", body);
     log(response.body);
 
     if (response.statusCode == 200) {

@@ -120,5 +120,7 @@ defmodule SchoolWeb.Router do
     pipe_through [:api, :api_auth, :require_parent_auth]
 
     get "/students", ParentPage.StudentsController, :index
+    post "/students/find_child", ParentPage.StudentsController, :find_child
+    get "/students/assign/:student_id", ParentPage.StudentsController, :assign_to_parent
   end
 end
