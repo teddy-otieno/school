@@ -16,5 +16,6 @@ defmodule School.Money.Account do
     account
     |> cast(attrs, [:name, :_type, :acc_owner])
     |> validate_required([:name, :_type, :acc_owner])
+    |> unique_constraint([:_type, :acc_owner], name: :accounts_type_entity_unique)
   end
 end

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shulesmart/models/student.dart';
 import 'package:shulesmart/repository/parent_dash.dart';
 import 'package:shulesmart/screens/parents/assign_child.dart';
+import 'package:shulesmart/screens/parents/student_profile.dart';
 import 'package:shulesmart/utils/utils.dart';
 
 class ParentHomeScreen extends StatefulWidget {
@@ -41,6 +42,14 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
     );
   }
 
+  void _handle_view_student_profile(Student student) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => StudentProfileView(student: student),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,6 +71,10 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                   title: Text(
                     "${_your_students[index].first_name} ${_your_students[index].last_name}",
                   ),
+                  trailing: Text(_your_students[index].balance),
+                  onTap: () {
+                    _handle_view_student_profile(_your_students[index]);
+                  },
                 ),
               ),
             )

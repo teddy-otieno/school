@@ -8,7 +8,7 @@ defmodule School.Money.Journal do
 
   def changeset(entry, attrs) do
     entry
-    |> cast([:description, :debit_trans, :credit_trans])
+    |> cast(attrs, [:description, :debit_trans, :credit_trans])
     |> validate_required([:debit_trans, :credit_trans])
   end
 end

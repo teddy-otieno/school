@@ -6,6 +6,8 @@ defmodule School.Parents do
   alias School.Accounts.User
   alias School.Parent.Parent
   alias School.School.Student
+  alias School.Money.Account
+  alias School.Money.AccountTransactions
   alias School.School
 
   def create_parent_account(params) do
@@ -60,15 +62,51 @@ defmodule School.Parents do
     |> dbg
   end
 
+  def fetch_student_account_and_balance(%Student{id: id} = student) do
+    query =
+      from a in Account,
+        join: trans in AccountTransactions,
+        on: a.id == trans.account_id,
+        where: a.acc_owner == ^id and a._type == :student,
+        select: fragment("sum((?).amount) - sum((?).amount)", trans.debit, trans.credit)
+
+    result =
+      query
+      |> Repo.one()
+
+    %{student: student, balance: if(is_nil(result), do: 0, else: result)}
+  end
+
   def assign_to_parent(%Parent{id: parent_id}, student_id) do
     query = from s in Student, where: s.id == ^student_id
 
-    # Setup the accounts
-
     student =
       Repo.get(query, student_id)
-      |> dbg
-      |> Student.changeset(%{"parent_id" => parent_id})
-      |> Repo.update(returning: true)
+
+    # Setup the accounts
+    Multi.new()
+    |> Multi.update(:student, Student.changeset(student, %{"parent_id" => parent_id}))
+    |> Multi.insert(:account, fn %{student: %Student{} = student} ->
+      %Account{}
+      |> Account.changeset(%{
+        "name" => student.first_name <> " " <> student.last_name,
+        "_type" => "student",
+        "acc_owner" => student.id
+      })
+    end)
+    |> Repo.transaction()
+  end
+
+  def fetch_student_and_transaction_history(id) do
+    query =
+      from a in Account,
+        join: trans in AccountTransactions,
+        on: a.id == trans.account_id,
+        join: student in Student,
+        on: student.id == a.acc_owner,
+        where: student.id == ^id and a._type == :student,
+        select: %{debit: trans.debit, credit: trans.credit, created_at: trans.created_at}
+
+    Repo.all(query)
   end
 end

@@ -122,5 +122,6 @@ defmodule SchoolWeb.Router do
     get "/students", ParentPage.StudentsController, :index
     post "/students/find_child", ParentPage.StudentsController, :find_child
     get "/students/assign/:student_id", ParentPage.StudentsController, :assign_to_parent
+    get "/students/:student_id", ParentPage.StudentsController, :view_student_profile
   end
 end
