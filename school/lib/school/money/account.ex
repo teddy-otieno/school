@@ -6,7 +6,7 @@ defmodule School.Money.Account do
 
   schema "accounts" do
     field :name, :string
-    field :_type, Ecto.Enum, values: [:vendor, :student, :parent, :school, :admin]
+    field :_type, Ecto.Enum, values: [:vendor, :student, :parent, :school, :admin, :mpesa, :bank]
 
     field :acc_owner, :integer
     timestamps(type: :utc_datetime)

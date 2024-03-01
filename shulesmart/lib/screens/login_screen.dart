@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:shulesmart/repository/accounts.dart';
 import 'package:shulesmart/screens/parents/dash.dart';
+import 'package:shulesmart/screens/signup_screen.dart';
 import 'package:shulesmart/utils/store.dart';
 import 'package:shulesmart/utils/utils.dart';
 
@@ -52,7 +53,13 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _handle_signup() {}
+  void _handle_signup() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const ParentSignupScreen(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     TextFormField(
                       controller: _email_controller,
+                      keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: "Email or Phone Number",

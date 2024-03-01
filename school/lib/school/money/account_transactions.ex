@@ -2,6 +2,7 @@ defmodule School.Money.AccountTransactions do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias School.Money.Journal
   alias School.Money.Account
 
   schema("account_transactions") do
@@ -9,7 +10,9 @@ defmodule School.Money.AccountTransactions do
     field :credit, Money.Ecto.Composite.Type
 
     field :comment, :string
-    belongs_to :owner, Account
+    belongs_to :owner, Account, foreign_key: :account_id
+    has_one(:debit_entry, Journal, foreign_key: :debit_trans)
+    has_one(:credit_entry, Journal, foreign_key: :credit_trans)
     timestamps(type: :utc_datetime)
   end
 

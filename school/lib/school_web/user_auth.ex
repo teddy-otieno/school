@@ -218,7 +218,7 @@ defmodule SchoolWeb.UserAuth do
         conn
 
       _ ->
-        message = Jason.encode(%{message: "NOPE"})
+        message = Jason.encode!(%{message: "NOPE"})
 
         conn
         |> send_resp(403, message)

@@ -1,5 +1,6 @@
 defmodule School.Parents do
   import Ecto.Query, warn: false
+  require Logger
   alias School.Repo
   alias Ecto.Multi
 
@@ -31,10 +32,10 @@ defmodule School.Parents do
   end
 
   def get_parent_from_user(%User{is_parent: true, id: id}) do
-    query = from p in Parent, where: p.id == ^id, preload: [:user]
+    query = from p in Parent, where: p.user_id == ^id, preload: [:user]
 
     query
-    |> Repo.one()
+    |> Repo.one!()
   end
 
   def list_students_from_parent(%Parent{id: id}) do
@@ -42,6 +43,11 @@ defmodule School.Parents do
 
     query
     |> Repo.all()
+  end
+
+  def list_students_from_parent(nil) do
+    Logger.debug("parent was not provided")
+    []
   end
 
   def find_child_in_schools(school_name, child_name) do

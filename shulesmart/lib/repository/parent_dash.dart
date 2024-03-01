@@ -30,6 +30,7 @@ Future<Result<List<SchoolStudentSearchValue>, String>> search_for_student(
   String school_name,
   String student_name,
 ) async {
+  log("Searching student...");
   var client = ApiClient.get_instance();
 
   try {
@@ -71,6 +72,30 @@ void assign_parent_to_id(int student_id) async {
   }
 }
 
+Future<Result<String, String>> initiate_submit_deposit_to_student(
+    int student_id, int amount) async {
+  var client = ApiClient.get_instance();
+
+  try {
+    var response = await client.post_with_auth(
+      "/api/parents/deposit",
+      {
+        "student": student_id.toString(),
+        "amount": amount.toString(),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return Result.ok("");
+    }
+
+    return Result.err("");
+  } catch (e, stack) {
+    log(e.toString(), stackTrace: stack);
+    return Result.err("");
+  }
+}
+
 Future<Result<List<Student>, String>>
     fetch_students_belonging_to_parent() async {
   var client = ApiClient.get_instance();
@@ -94,5 +119,70 @@ Future<Result<List<Student>, String>>
   } catch (e) {
     log(e.toString());
     return Result.err("No Internet Connection");
+  }
+}
+
+@JsonSerializable()
+class JournalEntry {
+  int id;
+  String comment;
+
+  JournalEntry({required this.id, required this.comment});
+
+  factory JournalEntry.fromJson(Map<String, dynamic> json) =>
+      _$JournalEntryFromJson(json);
+
+  Map<String, dynamic> toJson() => _$JournalEntryToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class StudentTransaction {
+  int id;
+  String? comment;
+  String credit, debit;
+  DateTime inserted_at;
+  JournalEntry? debit_entry, credit_entry;
+  StudentTransaction({
+    required this.id,
+    required this.comment,
+    required this.credit,
+    required this.debit,
+    required this.inserted_at,
+    required this.debit_entry,
+    required this.credit_entry,
+  });
+
+  factory StudentTransaction.fromJson(Map<String, dynamic> json) =>
+      _$StudentTransactionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StudentTransactionToJson(this);
+}
+
+Future<Result<List<StudentTransaction>, String>>
+    fetch_student_recent_transaction_history(
+  int student_id,
+) async {
+  var client = ApiClient.get_instance();
+
+  try {
+    var response = await client
+        .get_with_auth("/api/parents/students/transactions/$student_id");
+
+    log(response.body);
+    if (response.statusCode == 200) {
+      return Result.ok(
+        List.from(
+          jsonDecode(response.body)["data"].map((x) {
+            var e = StudentTransaction.fromJson(x);
+            return e;
+          }).toList(),
+        ),
+      );
+    }
+
+    return Result.err("Something went wront");
+  } catch (e) {
+    log(e.toString());
+    return Result.err("Internet is unavailable");
   }
 }
