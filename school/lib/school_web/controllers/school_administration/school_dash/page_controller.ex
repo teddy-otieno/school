@@ -30,9 +30,11 @@ defmodule SchoolWeb.SchoolAdministration.SchoolDash.PageController do
 
   def create_vendor(
         conn,
-        %{"vendor_name" => _vendor_name, "till_number" => _till_number, "submit" => _submit_value} =
-          params
+        %{"vendor_name" => _vendor_name, "till_number" => _till_number} = params
       ) do
+    %{"vendor_name" => _vendor_name, "till_number" => _till_number, "submit" => _submit_value} =
+      params
+
     # Add the vendor to the database and setup the user accounts
 
     # Create the user then vendor

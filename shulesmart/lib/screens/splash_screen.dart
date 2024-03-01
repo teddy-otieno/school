@@ -6,6 +6,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:shulesmart/screens/login_screen.dart';
 import 'package:shulesmart/screens/parents/dash.dart';
+import 'package:shulesmart/screens/vendor/dash.dart';
 import 'package:shulesmart/utils/store.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -30,11 +31,24 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Timer(const Duration(seconds: 2), () {
       if (state case AppState(session: var session) when session != null) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => const ParentDashboard(),
-          ),
-        );
+        if (session.is_vendor) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const VendorDashboardScreen(),
+            ),
+          );
+          return;
+        }
+
+        if (session.is_parent) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const ParentDashboard(),
+            ),
+          );
+          return;
+        }
+
         return;
       }
 

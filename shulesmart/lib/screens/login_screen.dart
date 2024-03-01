@@ -5,6 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:shulesmart/repository/accounts.dart';
 import 'package:shulesmart/screens/parents/dash.dart';
 import 'package:shulesmart/screens/signup_screen.dart';
+import 'package:shulesmart/screens/vendor/dash.dart';
 import 'package:shulesmart/utils/store.dart';
 import 'package:shulesmart/utils/utils.dart';
 
@@ -42,15 +43,25 @@ class _LoginScreenState extends State<LoginScreen> {
       StoreProvider.of<AppState>(context).dispatch(
         AddSession(session: session),
       );
-      Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const ParentDashboard()));
-    } else {
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-        SnackBar(
-          content: Text(result.error!),
-        ),
-      );
+
+      if (session.is_vendor) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const VendorDashboardScreen()));
+        return;
+      }
+      if (session.is_parent) {
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const ParentDashboard()));
+        return;
+      }
+      return;
     }
+
+    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      SnackBar(
+        content: Text(result.error!),
+      ),
+    );
   }
 
   void _handle_signup() {

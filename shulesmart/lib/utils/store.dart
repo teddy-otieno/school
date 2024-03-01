@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shulesmart/models/user_session.dart';
 import 'package:redux_persist/redux_persist.dart';
@@ -41,10 +42,16 @@ class AddSession extends Action {
   AddSession({required this.session});
 }
 
+class ClearSession extends Action {
+
+}
+
 AppState reducer(AppState state, dynamic actions) {
   switch (actions) {
     case AddSession(session: var session):
       return state.copyWith(session: session);
+	case ClearSession():
+		return AppState();
     default:
       return state;
   }
