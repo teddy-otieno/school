@@ -9,6 +9,7 @@ defmodule School.Schools do
 
   alias School.Accounts.User
   alias School.Repo
+  alias School.Parent.Parent
   alias School.School.Vendor
   alias School.School.Class
   alias School.School.Student
@@ -88,5 +89,17 @@ defmodule School.Schools do
 
     query
     |> Repo.all()
+  end
+
+  def list_parents_in_school(%School{id: id}) do
+    query =
+      from p in Parent,
+        inner_join: student in Student,
+        on: student.parent_id == p.id,
+        where: student.school_id == ^id,
+        select: %{parent: p, student: student},
+        preload: [:user]
+
+    query |> Repo.all()
   end
 end

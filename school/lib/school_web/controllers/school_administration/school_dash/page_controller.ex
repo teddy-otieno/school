@@ -44,7 +44,7 @@ defmodule SchoolWeb.SchoolAdministration.SchoolDash.PageController do
       {:ok, %{user: _user, vendor: _vendor}} ->
         conn |> redirect(to: ~p"/school/vendors")
 
-      {:error, failed_operation, failed_value, changes_so_far} ->
+      {:error, _failed_operation, _failed_value, _changes_so_far} ->
         # TODO: (teddy) Figure out what to do with this condition
         conn
     end
@@ -106,5 +106,17 @@ defmodule SchoolWeb.SchoolAdministration.SchoolDash.PageController do
     conn
     |> put_layout(html: :layout)
     |> render(:create_student, token: token, classes: classes_or_forms)
+  end
+
+  def index_parents(conn, _params) do
+    parents =
+      conn.assigns[:current_user]
+      |> Schools.fetch_school_record_for_user()
+      |> Schools.list_parents_in_school()
+      |> dbg
+
+    conn
+    |> put_layout(html: :layout)
+    |> render(:index_parents, parents: parents)
   end
 end
