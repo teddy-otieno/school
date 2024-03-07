@@ -65,6 +65,8 @@ defmodule SchoolWeb.Router do
 
     get "/parent", ParentPage.PageController, :home
 
+    get "/media/:path/:file", MediaController, :show
+
     # live_session :require_authenticated_user,
     #   on_mount: [{SchoolWeb.UserAuth, :ensure_authenticated}] do
     #   live "/users/settings", UserSettingsLive, :edit
@@ -130,5 +132,22 @@ defmodule SchoolWeb.Router do
         :list_recent_transactions
 
     post "/deposit", ParentPage.FinanceController, :deposit
+  end
+
+  scope "/api/vendors", SchoolWeb do
+    pipe_through [:api, :api_auth, :require_vendor_auth]
+
+    resources "/products", Vendors.ProductPageController, except: [:create]
+  end
+
+  pipeline :form_data_with_token_auth do
+    plug School.AuthAccessPipeline
+    plug Plug.Parsers, parsers: [:urlencoded, {:multipart, length: 20_000_000}]
+  end
+
+  scope "/api/vendors", SchoolWeb do
+    pipe_through [:api, :form_data_with_token_auth]
+
+    resources "/products", Vendors.ProductPageController, only: [:create]
   end
 end

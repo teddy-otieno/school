@@ -226,6 +226,19 @@ defmodule SchoolWeb.UserAuth do
     end
   end
 
+  def require_vendor_auth(conn, _opts) do
+    case School.Guardian.Plug.current_resource(conn) do
+      %User{is_vendor: true} ->
+        conn
+
+      _ ->
+        message = Jason.encode!(%{message: "You're not a vendor"})
+        conn
+        |> send_resp(403, message)
+        |> halt()
+    end
+  end
+
   def require_school_user(conn, _opts) do
     with %Accounts.User{is_school: true} <- conn.assigns[:current_user] do
       conn
