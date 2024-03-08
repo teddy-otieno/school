@@ -32,31 +32,29 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(const Duration(seconds: 2), () {
       if (state case AppState(session: var session) when session != null) {
         if (session.is_vendor) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const VendorDashboardScreen(),
-            ),
-          );
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => const VendorDashboardScreen(),
+              ),
+              (e) => false);
           return;
         }
 
         if (session.is_parent) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const ParentDashboard(),
-            ),
-          );
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const ParentDashboard()),
+              (e) => false);
           return;
         }
 
         return;
       }
 
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const LoginScreen(),
-        ),
-      );
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ),
+          (e) => false);
     });
   }
 

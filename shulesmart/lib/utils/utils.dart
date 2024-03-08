@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 class Result<T, E> {
   T? value;
   E? error;
@@ -10,5 +12,17 @@ class Result<T, E> {
 
   factory Result.err(E error) {
     return Result(error: error);
+  }
+
+  bool is_okay() {
+    return value != null;
+  }
+
+  T unwrap() {
+    if (value != null) {
+      return value!;
+    }
+
+    throw Error();
   }
 }

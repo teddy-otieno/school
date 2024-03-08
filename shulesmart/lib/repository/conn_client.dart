@@ -1,9 +1,12 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:http/retry.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart' as http_parser;
+import 'package:image_picker/image_picker.dart';
 
 class ApiClient {
   static ApiClient? _instance;
@@ -33,6 +36,35 @@ class ApiClient {
     return response;
   }
 
+  Future<http.StreamedResponse> post_form(
+    String url, {
+    required Map<String, String> body,
+    List<XFile>? files,
+  }) async {
+    var request = http.MultipartRequest('POST', create_path(url));
+    request.fields.addAll(body);
+    request.headers["Authorization"] = "Bearer $token";
+
+    if (files != null) {
+      request.files.addAll(
+        await Future.wait(
+          files.map(
+            (e) async => http.MultipartFile.fromBytes(
+              "product_image",
+              await e.readAsBytes(),
+              filename: e.name,
+              contentType: http_parser.MediaType.parse(
+                e.mimeType ?? "image/jpeg",
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return await request.send();
+  }
+
   Future<http.Response> get(String url) async {
     var response = _client.post(create_path(url));
 
@@ -46,8 +78,11 @@ class ApiClient {
     assert(token != null);
     var response = _client.post(
       create_path(url),
-      body: body,
-      headers: {"Authorization": "Bearer ${token!}"},
+      body: jsonEncode(body),
+      headers: {
+        "Authorization": "Bearer ${token!}",
+        "Content-Type": "application/json"
+      },
     );
 
     return response;

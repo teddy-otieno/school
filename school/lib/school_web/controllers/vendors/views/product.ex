@@ -9,7 +9,7 @@ defmodule SchoolWeb.Vendors.Views.Product do
     %{data: data(product)}
   end
 
-  defp data(%Product{} = product) do
+  def data(%Product{} = product) do
     %{
       id: product.id,
       product_name: product.product_name,
@@ -18,7 +18,10 @@ defmodule SchoolWeb.Vendors.Views.Product do
       inserted_at: product.inserted_at,
       updated_at: product.updated_at,
       image:
-        unless(is_nil(product.image), do: Path.relative_to(product.image, "./output"), else: nil)
+        unless(is_nil(product.image),
+          do: "media/" <> Path.relative_to(product.image, "./output"),
+          else: nil
+        )
     }
   end
 end

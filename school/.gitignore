@@ -35,3 +35,4 @@ school-*.tar
 npm-debug.log
 /assets/node_modules/
 
+output/

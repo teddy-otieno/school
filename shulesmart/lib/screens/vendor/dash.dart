@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:shulesmart/screens/vendor/inventory_screen.dart';
 import 'package:shulesmart/screens/vendor/sales_screen.dart';
+import 'package:shulesmart/screens/vendor/stocks_screen.dart';
 
 class VendorDashboardScreen extends StatefulWidget {
   const VendorDashboardScreen({super.key});
@@ -12,7 +13,10 @@ class VendorDashboardScreen extends StatefulWidget {
 }
 
 class _VendorDashboardScreenSate extends State<VendorDashboardScreen> {
-  final _screens = [const SalesScreen(), const InventoryManagerScreen()];
+  final _screens = [
+    const StockScreen(),
+    const SalesScreen(),
+  ];
   int _current_index = 0;
 
   @override
@@ -29,7 +33,7 @@ class _VendorDashboardScreenSate extends State<VendorDashboardScreen> {
           NavigationDestination(
             icon: Icon(Icons.storefront_rounded),
             label: "Sales",
-          )
+          ),
         ],
         onDestinationSelected: (index) {
           setState(() {
