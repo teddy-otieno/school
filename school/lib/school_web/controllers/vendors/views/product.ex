@@ -10,10 +10,12 @@ defmodule SchoolWeb.Vendors.Views.Product do
   end
 
   def data(%Product{} = product) do
+    {price, _other} = Float.parse(Money.to_string(product.price, symbol: false))
     %{
       id: product.id,
       product_name: product.product_name,
       price: Money.to_string(product.price),
+      price_raw: price,
       purchase_date: product.purchase_date,
       inserted_at: product.inserted_at,
       updated_at: product.updated_at,

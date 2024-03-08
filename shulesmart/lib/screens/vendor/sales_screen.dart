@@ -24,7 +24,7 @@ class _SalesScreenState extends State<SalesScreen> {
                   ),
                 );
               },
-              icon: const Icon(Icons.developer_mode_rounded),
+              icon: const Icon(Icons.point_of_sale_rounded),
             )
           ],
         )

@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:redux_persist/redux_persist.dart';
 import 'package:redux_persist_flutter/redux_persist_flutter.dart';
@@ -33,38 +34,94 @@ void main() async {
   runApp(MyApp(store: store));
 }
 
+@immutable
+class CustomColors extends ThemeExtension<CustomColors> {
+  const CustomColors({
+    required this.danger,
+  });
+
+  final Color? danger;
+
+  @override
+  CustomColors copyWith({Color? danger}) {
+    return CustomColors(
+      danger: danger ?? this.danger,
+    );
+  }
+
+  @override
+  CustomColors lerp(ThemeExtension<CustomColors>? other, double t) {
+    if (other is! CustomColors) {
+      return this;
+    }
+    return CustomColors(
+      danger: Color.lerp(danger, other.danger, t),
+    );
+  }
+
+  CustomColors harmonized(ColorScheme dynamic) {
+    return copyWith(danger: danger!.harmonizeWith(dynamic.primary));
+  }
+}
+
 class MyApp extends StatelessWidget {
   final Store<AppState> store;
+
+  final brand_blue = const Color(0xff7400b8);
 
   const MyApp({super.key, required this.store});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    CustomColors lightCustomColors =
+        const CustomColors(danger: Color(0xFFE53935));
+    CustomColors darkCustomColors =
+        const CustomColors(danger: Color(0xFFEF9A9A));
+
     return StoreProvider<AppState>(
       store: store,
-      child: MaterialApp(
-        title: 'Shule Smart',
-        theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // TRY THIS: Try running your application with "flutter run". You'll see
-          // the application has a purple toolbar. Then, without quitting the app,
-          // try changing the seedColor in the colorScheme below to Colors.green
-          // and then invoke "hot reload" (save your changes or press the "hot
-          // reload" button in a Flutter-supported IDE, or press "r" if you used
-          // the command line to start the app).
-          //
-          // Notice that the counter didn't reset back to zero; the application
-          // state is not lost during the reload. To reset the state, use hot
-          // restart instead.
-          //
-          // This works for code too, not just values: Most code changes can be
-          // tested with just a hot reload.
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-        ),
-        home: const SplashScreen(),
+      child: DynamicColorBuilder(
+        builder: (light_dynamic, dark_dynamic) {
+          ColorScheme lightColorScheme;
+          ColorScheme darkColorScheme;
+
+          if (light_dynamic != null && dark_dynamic != null) {
+            lightColorScheme = light_dynamic.harmonized();
+            lightColorScheme = lightColorScheme.copyWith();
+            lightCustomColors = lightCustomColors.harmonized(lightColorScheme);
+
+            darkColorScheme = dark_dynamic.harmonized();
+            darkColorScheme = darkColorScheme.copyWith();
+            darkCustomColors = darkCustomColors.harmonized(darkColorScheme);
+
+            // _isDemoUsingDynamicColors = true; // ignore, only for demo purposes
+          } else {
+            // Otherwise, use fallback schemes.
+            lightColorScheme = ColorScheme.fromSeed(
+              seedColor: brand_blue,
+            );
+            darkColorScheme = ColorScheme.fromSeed(
+              seedColor: brand_blue,
+              brightness: Brightness.dark,
+            );
+          }
+
+          return MaterialApp(
+            title: 'Shule Smart',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: brand_blue),
+              useMaterial3: true,
+              extensions: [lightCustomColors],
+            ),
+            darkTheme: ThemeData(
+              useMaterial3: true,
+              colorScheme: darkColorScheme,
+              extensions: [darkCustomColors],
+            ),
+            home: const SplashScreen(),
+          );
+        },
       ),
     );
   }

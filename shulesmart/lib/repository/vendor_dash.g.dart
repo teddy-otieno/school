@@ -13,6 +13,7 @@ ProductItem _$ProductItemFromJson(Map<String, dynamic> json) => ProductItem(
       purchase_date: DateTime.parse(json['purchase_date'] as String),
       price: json['price'] as String,
       product_name: json['product_name'] as String,
+      price_raw: (json['price_raw'] as num).toDouble(),
       image: json['image'] as String?,
     );
 
@@ -25,6 +26,7 @@ Map<String, dynamic> _$ProductItemToJson(ProductItem instance) =>
       'price': instance.price,
       'product_name': instance.product_name,
       'image': instance.image,
+      'price_raw': instance.price_raw,
     };
 
 ProductWithQuantity _$ProductWithQuantityFromJson(Map<String, dynamic> json) =>

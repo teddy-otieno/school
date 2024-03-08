@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'package:image_picker/image_picker.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shulesmart/repository/conn_client.dart';
+import 'package:shulesmart/screens/vendor/selling_screen.dart';
 import 'package:shulesmart/utils/utils.dart';
 
 part "vendor_dash.g.dart";
@@ -16,6 +17,7 @@ class ProductItem {
   DateTime inserted_at, updated_at, purchase_date;
   String price, product_name;
   String? image;
+  double price_raw;
 
   ProductItem({
     required this.id,
@@ -24,6 +26,7 @@ class ProductItem {
     required this.purchase_date,
     required this.price,
     required this.product_name,
+    required this.price_raw,
     this.image,
   });
 
@@ -173,6 +176,19 @@ Future<Result<StockMovement, String>> submit_new_stock(
     var movement = jsonDecode(response.body)["data"];
 
     return Result.ok(StockMovement.fromJson(movement));
+  } catch (e) {
+    log(e.toString());
+    return Result.err("");
+  }
+}
+
+Future<Result<String, String>> submit_new_sale(
+    List<CartItem> cart_items, int timestamp, int student_id) async {
+  var client = ApiClient.get_instance();
+
+  try {
+    var response = await client.post_with_auth("", {});
+    return Result.ok("");
   } catch (e) {
     log(e.toString());
     return Result.err("");
