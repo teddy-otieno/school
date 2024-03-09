@@ -138,6 +138,7 @@ defmodule SchoolWeb.Router do
     resources "/products", Vendors.ProductPageController, except: [:create]
     get "/stock/product", Vendors.StocksController, :list_all_products_with_quantities
     resources "/stock", Vendors.StocksController
+    resources "/sales", Vendors.SalesController
   end
 
   pipeline :form_data_with_token_auth do
