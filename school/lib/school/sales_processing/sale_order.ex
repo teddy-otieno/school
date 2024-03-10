@@ -1,4 +1,11 @@
 defmodule School.SalesProcessing.SaleOrder do
+  @moduledoc """
+    field :memo, :string
+    field :timestamp, :integer
+
+    belongs_to(:student, School.School.Student, foreign_key: :student_id)
+    belongs_to(:vendor, School.School.Vendor, foreign_key: :vendor_id)
+  """
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -6,6 +13,7 @@ defmodule School.SalesProcessing.SaleOrder do
 
   schema "sales_orders" do
     field :memo, :string
+    field :timestamp, :integer
 
     belongs_to(:student, School.School.Student, foreign_key: :student_id)
     belongs_to(:vendor, School.School.Vendor, foreign_key: :vendor_id)
@@ -15,7 +23,7 @@ defmodule School.SalesProcessing.SaleOrder do
 
   def changeset(%SaleOrder{} = order, attrs) do
     order
-    |> cast(attrs, [:memo, :student_id, :vendor_id])
-    |> validate_required([:student_id, :vendor_id])
+    |> cast(attrs, [:memo, :integer, :student_id, :vendor_id])
+    |> validate_required([:integer, :student_id, :vendor_id])
   end
 end

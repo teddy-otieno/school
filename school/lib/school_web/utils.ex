@@ -1,9 +1,9 @@
 defmodule SchoolWeb.Utils do
-  def send_error(conn, changeset, embedded \\ []) do
+  def send_error(conn, changeset) do
     dbg(changeset)
 
     error_messages =
-      Ecto.Changeset.traverse_errors(changeset, fn _changeset, field, {msg, opts} ->
+      Ecto.Changeset.traverse_errors(changeset, fn _changeset, field, {msg, _opts} ->
         %{Atom.to_string(field) => msg}
       end)
 

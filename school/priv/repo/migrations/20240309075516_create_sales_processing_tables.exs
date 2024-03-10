@@ -9,9 +9,12 @@ defmodule School.Repo.Migrations.CreateSalesProcessingTables do
       add :student_id, references(:students), null: false
       add :vendor_id, references(:vendors), null: false
       add :memo, :string, size: 5012
+      add :timestamp, :integer, null: false
 
       timestamps(type: :utc_datetime)
     end
+
+    create unique_index(:sales_orders, :timestamp)
 
     create table(:sales_order_details) do
       add :product_id, references(:product_items), null: false
