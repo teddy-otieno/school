@@ -23,7 +23,7 @@ defmodule School.SalesProcessing.SaleOrder do
 
   def changeset(%SaleOrder{} = order, attrs) do
     order
-    |> cast(attrs, [:memo, :integer, :student_id, :vendor_id])
-    |> validate_required([:integer, :student_id, :vendor_id])
+    |> cast(attrs, [:memo, :timestamp, :student_id, :vendor_id])
+    |> validate_required([:timestamp, :student_id, :vendor_id])
   end
 end

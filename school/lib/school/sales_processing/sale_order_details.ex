@@ -9,6 +9,7 @@ defmodule School.SalesProcessing.SaleOrderDetails do
   schema "sales_order_details" do
     field :purchase_price, Money.Ecto.Composite.Type
     field :memo, :string
+    field :quantity, :integer
 
     belongs_to :product, Product, foreign_key: :product_id
     belongs_to :sales_order, SaleOrder, foreign_key: :sales_order_id
@@ -18,7 +19,7 @@ defmodule School.SalesProcessing.SaleOrderDetails do
 
   def changeset(%SaleOrderDetails{} = detail, attrs) do
     detail
-    |> cast(attrs, [:purchase_price, :memo, :product_id, :sales_order_id])
-    |> validate_required([:purchase_price, :product_id, :sales_order_id])
+    |> cast(attrs, [:purchase_price, :memo, :product_id, :sales_order_id, :quantity])
+    |> validate_required([:purchase_price, :product_id, :sales_order_id, :quantity])
   end
 end

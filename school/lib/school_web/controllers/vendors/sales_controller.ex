@@ -20,11 +20,10 @@ defmodule SchoolWeb.Vendors.SalesController do
 
     with %Ecto.Changeset{valid?: true} = valid_sale <-
            DirectSaleSchema.changeset(%DirectSaleSchema{vendor_id: vendor_id}, params),
-         {:ok, _} <- SalesProcessing.initiate_direct_sale(valid_sale) do
-      # Begin the selling process
-
+         {:ok, %{sale_order: sale_order} = some_data} <- SalesProcessing.initiate_direct_sale(valid_sale) do
       conn
-      |> send_resp(200, "Someting went right")
+      |> put_view(SchoolWeb.Vendors.Views.SaleView)
+      |> render(:show, %{sale_data: some_data})
     else
       %Ecto.Changeset{valid?: false} = changeset ->
         conn

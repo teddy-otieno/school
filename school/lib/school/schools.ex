@@ -5,6 +5,7 @@ defmodule School.Schools do
 
   import Ecto.Query, warn: false
 
+  alias School.Money.Account
   alias Ecto.Multi
 
   alias School.Accounts.User
@@ -44,6 +45,13 @@ defmodule School.Schools do
         %Vendor{},
         Map.merge(params, %{"user_id" => user.id, "school_id" => school.id})
       )
+    end)
+    |> Multi.insert(:account, fn %{vendor: vendor, user: user} ->
+      Account.changeset(%Account{
+        name: "#{user.first_name} #{user.last_name}",
+        _type: :vendor,
+        acc_owner: vendor.id
+      }, %{})
     end)
     |> Repo.transaction()
   end

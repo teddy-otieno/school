@@ -10,11 +10,12 @@ config :pbkdf2_elixir, :rounds, 1
 # Run `mix help test` for more information.
 config :school, School.Repo,
   username: "postgres",
-  password: "postgres",
+  password: "helloworld",
   hostname: "localhost",
   database: "school_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: 10
+  pool_size: 10,
+  timeout: 100_000
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
