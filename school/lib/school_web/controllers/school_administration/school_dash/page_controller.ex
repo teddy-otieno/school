@@ -60,6 +60,14 @@ defmodule SchoolWeb.SchoolAdministration.SchoolDash.PageController do
     |> render(:add_vendor, token: token, type: "VENDOR")
   end
 
+  def view_vendor_profile(conn, %{"vendor_id" => vendor_id} = params) do
+    vendor = Schools.get_vendor_by_id(vendor_id) |> dbg
+
+    conn
+    |> put_layout(html: :layout)
+    |> render(:vendor_profile)
+  end
+
   def students(conn, _params) do
     students =
       conn.assigns[:current_user]

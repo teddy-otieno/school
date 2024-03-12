@@ -1,5 +1,6 @@
 defmodule School.Vendors do
   import Ecto.Query, warn: false
+  alias School.SalesProcessing.SaleOrderDetails
   alias School.SalesProcessing.SaleOrder
   alias School.Repo
 
@@ -76,15 +77,23 @@ defmodule School.Vendors do
   end
 
   def list_all_complete_sales(%Vendor{id: vendor_id}) do
+    get_total_value_of_sale_order =
+      from(order_details in SaleOrderDetails,
+        where: parent_as(:sale_order).id == order_details.sales_order_id,
+        select:
+          fragment("sum((?).amount * ?)", order_details.purchase_price, order_details.quantity)
+      )
+
     query =
       from(sale_order in SaleOrder,
+        as: :sale_order,
         where: sale_order.vendor_id == ^vendor_id,
         preload: [items: [:product], student: []],
-        order_by: [desc: sale_order.inserted_at]
+        order_by: [desc: sale_order.inserted_at],
+        select: {sale_order, subquery(get_total_value_of_sale_order)}
       )
 
     query
     |> Repo.all()
-    |> dbg()
   end
 end

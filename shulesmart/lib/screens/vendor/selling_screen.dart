@@ -108,6 +108,11 @@ class _SellingScreenState extends State<SellingScreen> {
     });
   }
 
+  void _submit_new_sale() async {
+    //FIXME: (teddy) Add a student identification, or student confirmation
+    submit_new_sale(_cart_items, _current_time_stamp, 2);
+  }
+
   void _show_cart(BuildContext context) {
     var total_amount = _cart_items.fold(
       0.0,
@@ -143,10 +148,7 @@ class _SellingScreenState extends State<SellingScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(8.0),
               child: FilledButton(
-                onPressed: () async {
-                  //FIXME: (teddy) Add a student identification, or student confirmation
-                  submit_new_sale(_cart_items, _current_time_stamp, 2);
-                },
+                onPressed: () async {},
                 child: Text("Checkout KES $total_amount"),
               ),
             )

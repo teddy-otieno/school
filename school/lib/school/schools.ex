@@ -5,11 +5,11 @@ defmodule School.Schools do
 
   import Ecto.Query, warn: false
 
-  alias School.Money.Account
   alias Ecto.Multi
-
-  alias School.Accounts.User
   alias School.Repo
+
+  alias School.Money.Account
+  alias School.Accounts.User
   alias School.Parent.Parent
   alias School.School.Vendor
   alias School.School.Class
@@ -47,11 +47,14 @@ defmodule School.Schools do
       )
     end)
     |> Multi.insert(:account, fn %{vendor: vendor, user: user} ->
-      Account.changeset(%Account{
-        name: "#{user.first_name} #{user.last_name}",
-        _type: :vendor,
-        acc_owner: vendor.id
-      }, %{})
+      Account.changeset(
+        %Account{
+          name: "#{user.first_name} #{user.last_name}",
+          _type: :vendor,
+          acc_owner: vendor.id
+        },
+        %{}
+      )
     end)
     |> Repo.transaction()
   end
@@ -109,5 +112,10 @@ defmodule School.Schools do
         preload: [:user]
 
     query |> Repo.all()
+  end
+
+  def get_vendor_by_id(id), do: Repo.get!(Vendor, id) |> Repo.preload([:products])
+
+  def get_vendors_most_recent_sales(%Vendor{id: vendor_id}) do
   end
 end

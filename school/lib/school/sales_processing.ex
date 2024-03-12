@@ -44,7 +44,19 @@ defmodule School.SalesProcessing do
     |> Multi.insert(:vendor_credit, &insert_vendor_credit/1)
     |> Multi.insert(:journal, &insert_journal_entry/1)
     |> Multi.insert_all(:stock_move, StockMovement, &move_stock/1, returning: true)
+    |> Multi.run(:total_sale_value, &compute_total_order_value/2)
     |> Repo.transaction()
+  end
+
+  defp compute_total_order_value(repo, %{sale_order: sale_order}) do
+    query =
+      from(order_details in SaleOrderDetails,
+        where: ^sale_order.id == order_details.sales_order_id,
+        select:
+          fragment("sum((?).amount * ?)", order_details.purchase_price, order_details.quantity)
+      )
+
+    {:ok, repo.one!(query)}
   end
 
   defp insert_invoice(%{sale_order: sale_order}) do

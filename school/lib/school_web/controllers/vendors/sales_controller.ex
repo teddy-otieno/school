@@ -32,14 +32,14 @@ defmodule SchoolWeb.Vendors.SalesController do
 
     with %Ecto.Changeset{valid?: true} = valid_sale <-
            DirectSaleSchema.changeset(%DirectSaleSchema{vendor_id: vendor_id}, params),
-         {:ok, %{sale_order: sale_order} = some_data} <-
+         {:ok, %{sale_order: sale_order, total_sale_value: total_sale_value}} <-
            SalesProcessing.initiate_direct_sale(valid_sale) do
       sale_order_with_preloaded_assoc =
         School.Repo.preload(sale_order, items: [:product], student: [])
 
       conn
       |> put_view(SchoolWeb.Vendors.Views.SaleView)
-      |> render(:show, %{sale: sale_order_with_preloaded_assoc})
+      |> render(:show, %{sale: {sale_order_with_preloaded_assoc, total_sale_value}})
     else
       %Ecto.Changeset{valid?: false} = changeset ->
         conn

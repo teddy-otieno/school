@@ -84,6 +84,7 @@ defmodule SchoolWeb.Router do
     get "/school/vendors", SchoolAdministration.SchoolDash.PageController, :vendors
     get "/school/vendors/create", SchoolAdministration.SchoolDash.PageController, :create_vendor
     post "/school/vendors/create", SchoolAdministration.SchoolDash.PageController, :create_vendor
+    get "/school/vendors/:vendor_id", SchoolAdministration.SchoolDash.PageController, :view_vendor_profile
     get "/school/students", SchoolAdministration.SchoolDash.PageController, :students
     get "/school/students/create", SchoolAdministration.SchoolDash.PageController, :create_student
     get "/school/parents", SchoolAdministration.SchoolDash.PageController, :index_parents

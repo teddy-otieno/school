@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shulesmart/repository/conn_client.dart';
@@ -182,15 +183,111 @@ Future<Result<StockMovement, String>> submit_new_stock(
   }
 }
 
-Future<Result<String, String>> submit_new_sale(
+@JsonSerializable()
+class SoldItem {
+  int id, quantity;
+  String total, purchase_price;
+  ProductItem product;
+
+  SoldItem({
+    required this.id,
+    required this.quantity,
+    required this.total,
+    required this.purchase_price,
+    required this.product,
+  });
+
+  factory SoldItem.fromJson(Map<String, dynamic> json) =>
+      _$SoldItemFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SoldItemToJson(this);
+}
+
+@JsonSerializable()
+class Student {
+  int id;
+  String first_name, last_name;
+
+  Student({
+    required this.id,
+    required this.first_name,
+    required this.last_name,
+  });
+
+  factory Student.fromJson(Map<String, dynamic> json) =>
+      _$StudentFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StudentToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class CompletedSale {
+  int id;
+  List<SoldItem> items;
+  Student student;
+  String total;
+
+  DateTime inserted_at, updated_at;
+
+  CompletedSale({
+    required this.id,
+    required this.items,
+    required this.student,
+    required this.total,
+    required this.inserted_at,
+    required this.updated_at,
+  });
+
+  factory CompletedSale.fromJson(Map<String, dynamic> json) =>
+      _$CompletedSaleFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CompletedSaleToJson(this);
+}
+
+Future<Result<CompletedSale, String>> submit_new_sale(
     List<CartItem> cart_items, int timestamp, int student_id) async {
   var client = ApiClient.get_instance();
 
   try {
-    var response = await client.post_with_auth("", {});
-    return Result.ok("");
+    var response = await client.post_with_auth("/api/vendors/sales", {
+      "student_id": 2,
+      "timestamp": timestamp,
+      "items": cart_items.map(
+        (e) {
+          return {"product_id": e.product.id, "quantity": e.quantity};
+        },
+      ).toList()
+    });
+
+    if (response.statusCode != 200) {
+      return Result.err("Something went wrong. Please try again later");
+    }
+
+    var json = jsonDecode(response.body)["data"];
+    return Result.ok(CompletedSale.fromJson(json));
   } catch (e) {
     log(e.toString());
+    return Result.err("");
+  }
+}
+
+/// Add pagination later
+Future<Result<List<CompletedSale>, String>> fetch_all_sales() async {
+  var client = ApiClient.get_instance();
+
+  try {
+    var response = await client.get_with_auth("/api/vendors/sales");
+
+    if (response.statusCode != 200) {
+      return Result.err("Something went wrong. Please try again later");
+    }
+
+    var json = jsonDecode(response.body)["data"];
+    List<CompletedSale> completed_sale_list =
+        List.from(json.map((e) => CompletedSale.fromJson(e)).toList());
+
+    return Result.ok(completed_sale_list);
+  } catch (e) {
     return Result.err("");
   }
 }

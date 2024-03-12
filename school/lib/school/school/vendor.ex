@@ -2,6 +2,7 @@ defmodule School.School.Vendor do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias School.Vendors.Product
   alias School.Accounts.User
   alias School.School
 
@@ -9,10 +10,11 @@ defmodule School.School.Vendor do
     field :vendor_name, :string
     field :till_number, :string
 
+    timestamps(type: :utc_datetime)
+
     belongs_to :user, User
     belongs_to :school, School
-
-    timestamps(type: :utc_datetime)
+    has_many(:products, Product, foreign_key: :vendor_id, references: :id)
   end
 
   @doc false

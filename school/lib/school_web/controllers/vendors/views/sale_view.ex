@@ -14,19 +14,21 @@ defmodule SchoolWeb.Vendors.Views.SaleView do
   def show(%{sale: sale}) do
     %{data: data(sale)}
   end
-  
-  def data(%SaleOrder{student: %Student{}} = completed_sale) do
+
+  def data({%SaleOrder{student: %Student{}} = completed_sale, total_order_value}) do
     student = completed_sale.student
 
     %{
       id: completed_sale.id,
       inserted_at: completed_sale.inserted_at,
+      updated_at: completed_sale.updated_at,
       items: for(item <- completed_sale.items, do: render_item(item)),
       student: %{
         id: completed_sale.student.id,
         first_name: student.first_name,
         last_name: student.last_name
-      }
+      },
+      total: total_order_value |> Money.new() |> Money.to_string()
     }
   end
 

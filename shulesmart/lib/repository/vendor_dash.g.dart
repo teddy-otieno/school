@@ -55,3 +55,53 @@ Map<String, dynamic> _$StockMovementToJson(StockMovement instance) =>
       'quantity': instance.quantity,
       'comment': instance.comment,
     };
+
+SoldItem _$SoldItemFromJson(Map<String, dynamic> json) => SoldItem(
+      id: json['id'] as int,
+      quantity: json['quantity'] as int,
+      total: json['total'] as String,
+      purchase_price: json['purchase_price'] as String,
+      product: ProductItem.fromJson(json['product'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$SoldItemToJson(SoldItem instance) => <String, dynamic>{
+      'id': instance.id,
+      'quantity': instance.quantity,
+      'total': instance.total,
+      'purchase_price': instance.purchase_price,
+      'product': instance.product,
+    };
+
+Student _$StudentFromJson(Map<String, dynamic> json) => Student(
+      id: json['id'] as int,
+      first_name: json['first_name'] as String,
+      last_name: json['last_name'] as String,
+    );
+
+Map<String, dynamic> _$StudentToJson(Student instance) => <String, dynamic>{
+      'id': instance.id,
+      'first_name': instance.first_name,
+      'last_name': instance.last_name,
+    };
+
+CompletedSale _$CompletedSaleFromJson(Map<String, dynamic> json) =>
+    CompletedSale(
+      id: json['id'] as int,
+      items: (json['items'] as List<dynamic>)
+          .map((e) => SoldItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      student: Student.fromJson(json['student'] as Map<String, dynamic>),
+      total: json['total'] as String,
+      inserted_at: DateTime.parse(json['inserted_at'] as String),
+      updated_at: DateTime.parse(json['updated_at'] as String),
+    );
+
+Map<String, dynamic> _$CompletedSaleToJson(CompletedSale instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'items': instance.items.map((e) => e.toJson()).toList(),
+      'student': instance.student.toJson(),
+      'total': instance.total,
+      'inserted_at': instance.inserted_at.toIso8601String(),
+      'updated_at': instance.updated_at.toIso8601String(),
+    };
