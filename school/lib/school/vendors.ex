@@ -1,5 +1,6 @@
 defmodule School.Vendors do
   import Ecto.Query, warn: false
+  alias School.SalesProcessing.SaleOrder
   alias School.Repo
 
   alias School.Vendors.Product
@@ -72,5 +73,18 @@ defmodule School.Vendors do
       )
 
     Repo.all(query)
+  end
+
+  def list_all_complete_sales(%Vendor{id: vendor_id}) do
+    query =
+      from(sale_order in SaleOrder,
+        where: sale_order.vendor_id == ^vendor_id,
+        preload: [items: [:product], student: []],
+        order_by: [desc: sale_order.inserted_at]
+      )
+
+    query
+    |> Repo.all()
+    |> dbg()
   end
 end

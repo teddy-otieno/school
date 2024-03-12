@@ -6,7 +6,19 @@ defmodule SchoolWeb.Vendors.SalesController do
   alias School.Vendors
   alias School.School.Vendor
 
+  @doc """
+  List all the sales
+  """
   def index(conn, _params) do
+    completed_sales =
+      conn
+      |> School.Guardian.Plug.current_resource()
+      |> Vendors.get_vendor_from_current_user()
+      |> Vendors.list_all_complete_sales()
+
+    conn
+    |> put_view(SchoolWeb.Vendors.Views.SaleView)
+    |> render(:index, %{sales: completed_sales})
   end
 
   @doc """
@@ -20,10 +32,14 @@ defmodule SchoolWeb.Vendors.SalesController do
 
     with %Ecto.Changeset{valid?: true} = valid_sale <-
            DirectSaleSchema.changeset(%DirectSaleSchema{vendor_id: vendor_id}, params),
-         {:ok, %{sale_order: sale_order} = some_data} <- SalesProcessing.initiate_direct_sale(valid_sale) do
+         {:ok, %{sale_order: sale_order} = some_data} <-
+           SalesProcessing.initiate_direct_sale(valid_sale) do
+      sale_order_with_preloaded_assoc =
+        School.Repo.preload(sale_order, items: [:product], student: [])
+
       conn
       |> put_view(SchoolWeb.Vendors.Views.SaleView)
-      |> render(:show, %{sale_data: some_data})
+      |> render(:show, %{sale: sale_order_with_preloaded_assoc})
     else
       %Ecto.Changeset{valid?: false} = changeset ->
         conn
