@@ -2,6 +2,7 @@ defmodule SchoolWeb.Vendors.Views.SaleView do
   alias School.SalesProcessing.SaleOrder
   alias School.School.Student
   alias School.SalesProcessing.SaleOrderDetails
+  alias SchoolWeb.Vendors.Views.Product, as: ProductView
   alias School.Vendors.Product
 
   def index(%{sales: completed_sales}) do
@@ -35,11 +36,7 @@ defmodule SchoolWeb.Vendors.Views.SaleView do
       purchase_price: Money.to_string(item.purchase_price),
       quantity: item.quantity,
       total: Money.to_string(Money.multiply(item.purchase_price, item.quantity)),
-      product: %{
-        id: item.product.id,
-        description: item.product.description,
-        image: item.product.image
-      }
+      product: ProductView.data(item.product)
     }
   end
 end
