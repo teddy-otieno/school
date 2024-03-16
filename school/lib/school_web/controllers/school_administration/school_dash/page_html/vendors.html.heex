@@ -12,24 +12,28 @@
           <th>Name</th>
           <th>Till Number</th>
           <th>Phone Number</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         <%= for vendor <- @vendor_list do %>
-          <tr>
-            <td>
-              <a href={~p"/school/vendors/#{vendor.id}"}><%= vendor.id %></a>
-            </td>
-            <td>
-              <%= vendor.vendor_name %>
-            </td>
-            <td>
-              <%= vendor.till_number %>
-            </td>
-            <td>
-              <%= vendor.user.phone_number %>
-            </td>
-          </tr>
+            <tr>
+              <td>
+                <%= vendor.id %>
+              </td>
+              <td>
+                <%= vendor.vendor_name %>
+              </td>
+              <td>
+                <%= vendor.till_number %>
+              </td>
+              <td>
+                <%= vendor.user.phone_number %>
+              </td>
+              <td>
+                  <a class="secondary-button w-full" href={~p"/school/vendors/#{vendor.id}"}> View </a> 
+              </td>
+            </tr>
         <% end %>
       </tbody>
     </table>

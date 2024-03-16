@@ -60,12 +60,29 @@ defmodule SchoolWeb.SchoolAdministration.SchoolDash.PageController do
     |> render(:add_vendor, token: token, type: "VENDOR")
   end
 
-  def view_vendor_profile(conn, %{"vendor_id" => vendor_id} = params) do
+  def view_vendor_profile(conn, %{"vendor_id" => vendor_id}) do
     vendor = Schools.get_vendor_by_id(vendor_id) |> dbg
+
+    latest_sales =
+      Schools.get_vendors_most_recent_sales(vendor)
+
+    sallable_items =
+      Schools.get_vendors_sallable_items(vendor)
+      |> Enum.map(fn x ->
+        unless is_nil(x.image) do
+          Map.put(x, :image_path, "/media/#{Path.relative_to(x.image, "./output")}")
+        else
+          Map.put(x, :image_path, " ")
+        end
+      end)
 
     conn
     |> put_layout(html: :layout)
-    |> render(:vendor_profile)
+    |> render(:vendor_profile,
+      vendor: vendor,
+      latest_sales: latest_sales,
+      sallable_items: sallable_items
+    )
   end
 
   def students(conn, _params) do

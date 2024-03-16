@@ -14,6 +14,8 @@ defmodule School.Schools do
   alias School.School.Vendor
   alias School.School.Class
   alias School.School.Student
+  alias School.Vendors.Product
+  alias School.SalesProcessing.SaleOrder
   alias School.School
 
   def setup_school(%User{} = user, params) do
@@ -114,8 +116,25 @@ defmodule School.Schools do
     query |> Repo.all()
   end
 
-  def get_vendor_by_id(id), do: Repo.get!(Vendor, id) |> Repo.preload([:products])
+  def get_vendor_by_id(id), do: Repo.get!(Vendor, id) |> Repo.preload([:user])
 
   def get_vendors_most_recent_sales(%Vendor{id: vendor_id}) do
+    query =
+      from(sale_order in SaleOrder,
+        where: sale_order.vendor_id == ^vendor_id,
+        order_by: [desc: sale_order.inserted_at],
+        limit: 5,
+        preload: [:items, :student]
+      )
+
+    query
+    |> Repo.all()
+  end
+
+  def get_vendors_sallable_items(%Vendor{id: vendor_id}) do
+    query = from(item in Product, where: item.vendor_id == ^vendor_id)
+
+    query
+    |> Repo.all()
   end
 end

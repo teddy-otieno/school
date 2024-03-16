@@ -1,3 +1,87 @@
-<main class="p-4">
-  <h1>helo world</h1>
+<main class="grid grid-cols-[1fr_auto]">
+  <section >
+    <div class="p-4">
+      <h1 class='font-bold'>Vendor</h1>
+    </div>
+    <div class="grid grid-cols-[auto_1fr] gap-8 p-4 items-center">
+      <div>
+        <div class="rounded-full h-32 w-32 bg-gray-300"></div>
+      </div>
+      <div>
+        <span class="grid grid-cols-[0.2fr_1fr]">
+          <h3>Name</h3>
+          <p><%= @vendor.vendor_name %></p>
+        </span>
+        <span class="grid grid-cols-[0.2fr_1fr]">
+          <h3>Till Number</h3>
+          <p><%= @vendor.till_number %></p>
+        </span>
+        <span class="grid grid-cols-[0.2fr_1fr]">
+          <h3>Phone Number</h3>
+          <p><%= @vendor.user.phone_number %></p>
+        </span>
+        <span class="grid grid-cols-[0.2fr_1fr]">
+          <h3>Email</h3>
+          <p><%= @vendor.user.email %></p>
+        </span>
+      </div>
+    </div>
+
+    <div class="p-4 flex flex-col gap-4">
+      <h2 class="font-bold">Recent Sales</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Trans ID</th>
+            <th>Name</th>
+            <th>Amount</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for sale <- @latest_sales do %>
+          <tr>
+            <td>
+              <%= sale.id %>
+            </td>
+            <td>
+              <%=  "#{sale.student.first_name} #{sale.student.last_name}" %>
+            </td>
+            <td>
+              <%= Enum.reduce(
+                  sale.items, 
+                  Money.new(0), 
+                  fn acc, x -> 
+                    acc.purchase_price 
+                    |> Money.multiply(acc.quantity) 
+                    |> Money.add(x) 
+                  end) 
+              %>
+            </td>
+            <td><%= DateTime.to_string(sale.inserted_at)  %></td>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section class="w-40 border-l min-h-screen">
+    <ul>
+      <li class="p-4">
+        <h2 class="font-bold">Sellable Items</h2>
+      </li>
+      <%= for sallable_item <- @sallable_items do %>
+        <li>
+          <div class="px-4 py-2 flex gap-2 items-center">
+            <%= if is_nil(sallable_item.image) do %>
+              <div class="h-8 w-8 bg-gray-300 rounded"></div>
+            <% else %> 
+              <img src={"#{sallable_item.image_path}"} class="h-8 w-8 rounded" /> 
+            <% end %>
+            <p><%= sallable_item.product_name %></p>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  </section>
 </main>

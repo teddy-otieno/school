@@ -148,7 +148,7 @@ defmodule SchoolWeb.Router do
   end
 
   scope "/", SchoolWeb do
-    pipe_through [:api, :form_data_with_token_auth]
+    pipe_through [:api]
     get "/media/:path/:file", MediaController, :show
   end
 
