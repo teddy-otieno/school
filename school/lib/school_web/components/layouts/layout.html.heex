@@ -1,29 +1,45 @@
 <main class="grid grid-cols-[200pt_1fr] h-screen">
   <div class="shadow">
+    <div class="grid grid-cols-[1fr_auto] items-center p-4 ">
+      <h1 class="font-bold primary">Shule Smart</h1>
+      <span class="material-symbols-outlined"> menu </span>
+    </div>
     <ul>
       <li>
-        <a href={~p"/school/vendors"} class="flex align-items justify-center p-4 hover:bg-blue-100 hover:text-blue-500">
+        <a href={~p"/school/vendors"} class="nav-list-item">
           <span>Vendors</span>
+          <span class="material-symbols-outlined">
+          storefront
+          </span>
         </a>
       </li>
       <li>
-        <a href={~p"/school/students"} class="flex align-items justify-center p-4 hover:bg-blue-100 hover:text-blue-500">
+        <a href={~p"/school/students"} class="nav-list-item">
           <span>Students</span>
+          <span class="material-symbols-outlined">
+          school
+          </span>
         </a>
       </li>
       <li>
-        <a href={~p"/school/analytics"} class="flex align-items justify-center p-4 hover:bg-blue-100 hover:text-blue-500">
+        <a href={~p"/school/analytics"} class="nav-list-item">
           <span>Analytics</span>
         </a>
       </li>
       <li>
-        <a href={~p"/school/parents"} class="flex align-items justify-center p-4 hover:bg-blue-100 hover:text-blue-500">
+        <a href={~p"/school/parents"} class="nav-list-item">
           <span>Parent</span>
+          <span class="material-symbols-outlined">
+          supervisor_account
+          </span>
         </a>
       </li>
       <li>
-        <a href={~p"/school/classes"} class="flex align-items justify-center p-4 hover:bg-blue-100 hover:text-blue-500">
+        <a href={~p"/school/classes"} class="nav-list-item">
           <span>Classes</span>
+          <span class="material-symbols-outlined">
+          chair
+          </span>
         </a>
       </li>
     </ul>

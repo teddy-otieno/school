@@ -9,6 +9,7 @@
         <th>Id</th>
         <th>Label</th>
         <th>Type</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody>
@@ -17,6 +18,7 @@
           <td><%= class.id %></td>
           <td><%= class.label %></td>
           <td><%= class.type %></td>
+          <td><a class="text-button" href={~p"/school/classes/students/#{class.id}"}>View</a></td>
         </tr>
       <% end %>
     </tbody>

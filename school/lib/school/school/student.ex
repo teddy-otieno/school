@@ -2,6 +2,7 @@ defmodule School.School.Student do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias School.Parent.Parent
   alias School.School.Class
   alias School.School
 
@@ -12,6 +13,7 @@ defmodule School.School.Student do
     belongs_to :school, School
     belongs_to :parent, Parent
     belongs_to :class, Class
+
     timestamps(type: :utc_datetime)
   end
 

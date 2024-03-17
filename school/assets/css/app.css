@@ -4,12 +4,24 @@
 
 /* This file is for your main application CSS */
 
+.primary {
+  @apply text-blue-500;
+}
+
 .primary-button {
   @apply bg-blue-500 py-2 px-4 rounded shadow text-white font-medium;
 }
 
 .secondary-button {
   @apply py-2 px-4 rounded shadow text-blue-500 font-medium;
+}
+
+.text-button {
+  @apply text-blue-500 font-medium;
+}
+
+.nav-list-item {
+  @apply grid grid-cols-[1fr_auto] px-4 py-2 hover:bg-blue-100 hover:text-blue-500 border-b border-b-gray-100;
 }
 
 input[type="text"],

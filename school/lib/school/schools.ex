@@ -137,4 +137,11 @@ defmodule School.Schools do
     query
     |> Repo.all()
   end
+
+  def get_class_by_id(class_id) do
+    query =
+      from(class in Class, where: class.id == ^class_id, preload: [students: [parent: [:user]]])
+
+    Repo.one(query)
+  end
 end
