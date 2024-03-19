@@ -5,6 +5,7 @@ defmodule SchoolWeb.Vendors.SalesController do
   alias School.SalesProcessing
   alias School.Vendors
   alias School.School.Vendor
+  alias School.Finances
 
   @doc """
   List all the sales
@@ -49,5 +50,17 @@ defmodule SchoolWeb.Vendors.SalesController do
         conn
         |> send_resp(400, "Unable to return")
     end
+  end
+
+  def get_account_state(conn, _params) do
+    state =
+      conn
+      |> School.Guardian.Plug.current_resource()
+      |> Vendors.get_vendor_from_current_user()
+      |> Finances.get_vendor_account_state()
+
+    conn
+    |> put_view(SchoolWeb.Vendors.Views.AccountState)
+    |> render(:show, %{state: state})
   end
 end

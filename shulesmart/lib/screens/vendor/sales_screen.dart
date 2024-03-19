@@ -27,6 +27,8 @@ class _SalesScreenState extends State<SalesScreen> {
     //Load
 
     var sales_result = await fetch_all_sales();
+    if (!context.mounted) return;
+
     if (sales_result case Result(value: var value) when value != null) {
       setState(() {
         _completed_sales = value;
@@ -36,64 +38,66 @@ class _SalesScreenState extends State<SalesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: _load_sales,
-      child: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            title: const Text("Todays Sales"),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const SellingScreen(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.point_of_sale_rounded),
-              )
-            ],
-          ),
-          SliverList.separated(
-            itemCount: _completed_sales.length,
-            itemBuilder: (context, index) {
-              var item = _completed_sales[index];
+    return Scaffold(
+      body: RefreshIndicator(
+        onRefresh: _load_sales,
+        child: CustomScrollView(
+          slivers: [
+            const SliverAppBar(
+              title: Text("Recent Sales"),
+              actions: [],
+            ),
+            SliverList.separated(
+              itemCount: _completed_sales.length,
+              itemBuilder: (context, index) {
+                var item = _completed_sales[index];
 
-              var moment = item.inserted_at.toMoment();
+                var moment = item.inserted_at.toMoment();
 
-              return ListTile(
-                leading: item.items.length == 1
-                    ? ImageThumb(image_path: item.items[0].product.image)
-                    : Container(
-                        height: 32,
-                        width: 32,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary,
-                          borderRadius: BorderRadius.circular(8),
+                return ListTile(
+                  leading: item.items.length == 1
+                      ? ImageThumb(image_path: item.items[0].product.image)
+                      : Container(
+                          height: 32,
+                          width: 32,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.secondary,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "M",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.onSecondary,
+                                ),
+                          ),
                         ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          "M",
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(
-                                color:
-                                    Theme.of(context).colorScheme.onSecondary,
-                              ),
-                        ),
-                      ),
-                title: Text(
-                  "${item.student.first_name} ${item.student.last_name}",
-                ),
-                trailing: Text(moment.fromNow()),
-                subtitle: Text(item.total),
-              );
-            },
-            separatorBuilder: (context, index) => const Divider(),
-          ),
-        ],
+                  title: Text(
+                    "${item.student.first_name} ${item.student.last_name}",
+                  ),
+                  trailing: Text(moment.fromNow()),
+                  subtitle: Text(item.total),
+                );
+              },
+              separatorBuilder: (context, index) => const Divider(),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const SellingScreen(),
+            ),
+          );
+        },
+        icon: const Icon(Icons.point_of_sale_rounded),
+        label: const Text("Sell"),
       ),
     );
   }

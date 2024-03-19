@@ -54,7 +54,8 @@ defmodule School.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:guardian, "~> 2.0"},
       {:money, "~> 1.12"},
-      {:uuid, "~> 1.1"}
+      {:uuid, "~> 1.1"},
+      {:dialyxir, "~> 1.3", only: [:dev], runtime: false}
     ]
   end
 

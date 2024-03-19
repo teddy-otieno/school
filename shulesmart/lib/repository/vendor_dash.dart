@@ -4,9 +4,11 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shulesmart/repository/conn_client.dart';
+import 'package:shulesmart/repository/parent_dash.dart';
 import 'package:shulesmart/screens/vendor/selling_screen.dart';
 import 'package:shulesmart/utils/utils.dart';
 
@@ -289,5 +291,41 @@ Future<Result<List<CompletedSale>, String>> fetch_all_sales() async {
     return Result.ok(completed_sale_list);
   } catch (e) {
     return Result.err("");
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class VendorAccountState {
+  String account_balance;
+  List<StudentTransaction> recent_transactions;
+
+  VendorAccountState({
+    required this.account_balance,
+    required this.recent_transactions,
+  });
+
+  factory VendorAccountState.fromJson(Map<String, dynamic> json) =>
+      _$VendorAccountBalanceFromJson(json);
+
+  Map<String, dynamic> toJson() => _$VendorAccountBalanceToJson(this);
+}
+
+Future<Either<String, VendorAccountState>> fetch_vendors_account_state() async {
+  var client = ApiClient.get_instance();
+
+  try {
+    var response = await client.get_with_auth("/api/vendors/account/");
+    log(response.body);
+
+    if (response.statusCode != 200) {
+      return const Left("value");
+    }
+    return Right(
+      VendorAccountState.fromJson(
+        jsonDecode(response.body)["data"],
+      ),
+    );
+  } catch (e) {
+    return const Left("");
   }
 }

@@ -40,8 +40,8 @@ defmodule School.SalesProcessing do
     |> Multi.insert(:invoice, &insert_invoice/1)
     |> Multi.run(:student_account, &get_student_account/2)
     |> Multi.run(:vendor_account, &get_vendor_account/2)
-    |> Multi.insert(:student_debit, &insert_student_debit/1)
-    |> Multi.insert(:vendor_credit, &insert_vendor_credit/1)
+    |> Multi.insert(:student_credit, &insert_student_credit/1)
+    |> Multi.insert(:vendor_debit, &insert_vendor_debit/1)
     |> Multi.insert(:journal, &insert_journal_entry/1)
     |> Multi.insert_all(:stock_move, StockMovement, &move_stock/1, returning: true)
     |> Multi.run(:total_sale_value, &compute_total_order_value/2)
@@ -79,7 +79,7 @@ defmodule School.SalesProcessing do
     |> dbg
   end
 
-  @spec insert_sale_order(%{changes: %DirectSaleSchema{}}) :: any()
+  @spec insert_sale_order(%{original_changes: %DirectSaleSchema{}}) :: any()
   defp insert_sale_order(%{original_changes: changes}) do
     SaleOrder.changeset(%SaleOrder{}, %{
       "student_id" => changes.student_id,
@@ -105,10 +105,6 @@ defmodule School.SalesProcessing do
     {:ok, vendor_account}
   end
 
-  @doc """
-    ordered_items - items inserted to the database i.e SaleOrderDetails
-    items - items received from the user i.e ItemsToBeSold
-  """
   defp compute_total_amount_for_items({_, ordered_items}, items) do
     ordered_items
     |> dbg
@@ -131,38 +127,40 @@ defmodule School.SalesProcessing do
     end)
   end
 
-  defp insert_vendor_credit(%{
+  defp insert_vendor_debit(%{
          inserted_order_items: ordered_items,
          vendor_account: vendor_account,
          items_to_be_sold: items
        }) do
     %AccountTransactions{
-      debit: Money.new(0),
-      credit: compute_total_amount_for_items(ordered_items, items),
+      credit: Money.new(0),
+      debit: compute_total_amount_for_items(ordered_items, items),
       account_id: vendor_account.id
     }
   end
 
-  defp insert_student_debit(%{
+  defp insert_student_credit(%{
          inserted_order_items: ordered_items,
          student_account: s_account,
          items_to_be_sold: items
        }) do
     AccountTransactions.changeset(
       %AccountTransactions{
-        debit: compute_total_amount_for_items(ordered_items, items),
-        credit: Money.new(0),
+        credit: compute_total_amount_for_items(ordered_items, items),
+        debit: Money.new(0),
         account_id: s_account.id
       },
       %{}
     )
   end
 
-  @spec insert_journal_entry(%{
-          student_debit: %AccountTransactions{},
-          vendor_credit: %AccountTransactions{}
-        }) :: %Ecto.Changeset{}
-  defp insert_journal_entry(%{student_debit: debit, vendor_credit: credit}) do
+  @type new_journal_entry() :: %{
+          student_credit: %AccountTransactions{},
+          vendor_debit: %AccountTransactions{}
+        }
+
+  @spec insert_journal_entry(new_journal_entry()) :: %Ecto.Changeset{}
+  defp insert_journal_entry(%{student_credit: credit, vendor_debit: debit}) do
     Journal.changeset(
       %Journal{
         debit_trans: debit.id,
@@ -173,7 +171,7 @@ defmodule School.SalesProcessing do
     )
   end
 
-  @spec move_stock(%{items_to_be_sold: list(%ItemsToBeSold{})}) ::
+  @spec move_stock(%{items_to_be_sold: list(%ItemsToBeSold{}), sale_order: %SaleOrder{}}) ::
           list(%{product_id: integer(), quantity: integer(), comment: binary()})
   defp move_stock(%{items_to_be_sold: items, sale_order: sale_order}) do
     items

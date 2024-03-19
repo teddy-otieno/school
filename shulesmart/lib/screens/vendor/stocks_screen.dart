@@ -19,6 +19,8 @@ class _StockScreenState extends State<StockScreen> {
   Future<void> _load_stock() async {
     var stock_quantities_result = await fetch_all_stock_with_quantity();
 
+    if (!mounted) return;
+
     if (stock_quantities_result case Result(value: var quantities)
         when quantities != null) {
       setState(() {

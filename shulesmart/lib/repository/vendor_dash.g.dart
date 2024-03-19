@@ -105,3 +105,19 @@ Map<String, dynamic> _$CompletedSaleToJson(CompletedSale instance) =>
       'inserted_at': instance.inserted_at.toIso8601String(),
       'updated_at': instance.updated_at.toIso8601String(),
     };
+
+VendorAccountState _$VendorAccountBalanceFromJson(Map<String, dynamic> json) =>
+    VendorAccountState(
+      account_balance: json['account_balance'] as String,
+      recent_transactions: (json['recent_transactions'] as List<dynamic>)
+          .map((e) => StudentTransaction.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$VendorAccountBalanceToJson(
+        VendorAccountState instance) =>
+    <String, dynamic>{
+      'account_balance': instance.account_balance,
+      'recent_transactions':
+          instance.recent_transactions.map((e) => e.toJson()).toList(),
+    };

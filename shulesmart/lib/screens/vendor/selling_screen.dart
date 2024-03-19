@@ -148,7 +148,9 @@ class _SellingScreenState extends State<SellingScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(8.0),
               child: FilledButton(
-                onPressed: () async {},
+                onPressed: () async {
+                  _submit_new_sale();
+                },
                 child: Text("Checkout KES $total_amount"),
               ),
             )

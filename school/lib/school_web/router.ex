@@ -79,13 +79,20 @@ defmodule SchoolWeb.Router do
     post "/school/setup", SchoolAdministration.SchoolSetup.PageController, :setup
     get "/school/classes", SchoolAdministration.SchoolSetup.PageController, :classes
     get "/school/classes/create", SchoolAdministration.SchoolSetup.PageController, :create_class
-    get "school/classes/students/:class_id", SchoolAdministration.SchoolDash.ClassesController, :list_students
+
+    get "school/classes/students/:class_id",
+        SchoolAdministration.SchoolDash.ClassesController,
+        :list_students
 
     get "/school/dash", SchoolAdministration.SchoolDash.PageController, :home
     get "/school/vendors", SchoolAdministration.SchoolDash.PageController, :vendors
     get "/school/vendors/create", SchoolAdministration.SchoolDash.PageController, :create_vendor
     post "/school/vendors/create", SchoolAdministration.SchoolDash.PageController, :create_vendor
-    get "/school/vendors/:vendor_id", SchoolAdministration.SchoolDash.PageController, :view_vendor_profile
+
+    get "/school/vendors/:vendor_id",
+        SchoolAdministration.SchoolDash.PageController,
+        :view_vendor_profile
+
     get "/school/students", SchoolAdministration.SchoolDash.PageController, :students
     get "/school/students/create", SchoolAdministration.SchoolDash.PageController, :create_student
     get "/school/parents", SchoolAdministration.SchoolDash.PageController, :index_parents
@@ -141,6 +148,7 @@ defmodule SchoolWeb.Router do
     get "/stock/product", Vendors.StocksController, :list_all_products_with_quantities
     resources "/stock", Vendors.StocksController
     resources "/sales", Vendors.SalesController
+    get "/account", Vendors.SalesController, :get_account_state
   end
 
   pipeline :form_data_with_token_auth do
@@ -155,7 +163,6 @@ defmodule SchoolWeb.Router do
 
   scope "/api/vendors", SchoolWeb do
     pipe_through [:api, :form_data_with_token_auth]
-
     resources "/products", Vendors.ProductPageController, only: [:create]
   end
 end
