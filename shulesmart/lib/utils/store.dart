@@ -42,16 +42,14 @@ class AddSession extends Action {
   AddSession({required this.session});
 }
 
-class ClearSession extends Action {
-
-}
+class ClearSession extends Action {}
 
 AppState reducer(AppState state, dynamic actions) {
   switch (actions) {
     case AddSession(session: var session):
       return state.copyWith(session: session);
-	case ClearSession():
-		return AppState();
+    case ClearSession():
+      return AppState();
     default:
       return state;
   }

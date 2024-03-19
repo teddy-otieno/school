@@ -1,11 +1,12 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fpdart/fpdart.dart' as fp;
 import 'package:moment_dart/moment_dart.dart';
 import 'package:shulesmart/repository/vendor_dash.dart';
+import 'package:shulesmart/screens/splash_screen.dart';
+import 'package:shulesmart/utils/store.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -55,8 +56,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
         child: CustomScrollView(
           slivers: [
-            const SliverAppBar(
-              title: Text("Your Name"),
+            SliverAppBar(
+              title: const Text("Your Name"),
+              actions: [
+                StoreConnector<AppState, VoidCallback>(
+                  converter: (store) {
+                    return () => store.dispatch(ClearSession());
+                  },
+                  builder: (context, callback) {
+                    return IconButton(
+                      icon: const Icon(Icons.logout_rounded),
+                      onPressed: () {
+                        callback();
+
+                        //Navigate to the splash screen
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const SplashScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      },
+                    );
+                  },
+                )
+              ],
             ),
             SliverToBoxAdapter(
               child: Padding(
