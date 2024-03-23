@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -305,9 +304,9 @@ class VendorAccountState {
   });
 
   factory VendorAccountState.fromJson(Map<String, dynamic> json) =>
-      _$VendorAccountBalanceFromJson(json);
+      _$VendorAccountStateFromJson(json);
 
-  Map<String, dynamic> toJson() => _$VendorAccountBalanceToJson(this);
+  Map<String, dynamic> toJson() => _$VendorAccountStateToJson(this);
 }
 
 Future<Either<String, VendorAccountState>> fetch_vendors_account_state() async {

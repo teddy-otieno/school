@@ -21,10 +21,10 @@ defmodule SchoolWeb.Utils do
     }
   """
 
-  @spec save_media(:product_item, %Plug.Upload{}) :: binary()
-  def save_media(:product_item, %Plug.Upload{} = file) do
+  @spec save_media(:product_item | :student, %Plug.Upload{}) :: binary()
+  def save_media(media_type, %Plug.Upload{} = file) when is_atom(media_type) do
     # Move the file to the upload directory
-    output_dir = Path.relative("./output/product_item")
+    output_dir = Path.relative("./output/#{to_string(media_type)}")
 
     unless File.exists?(output_dir) do
       File.mkdir_p(output_dir)

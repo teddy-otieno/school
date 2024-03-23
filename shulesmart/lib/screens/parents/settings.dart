@@ -29,11 +29,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: FilledButton(
-          onPressed: _handle_logout,
-          child: const Text("Logout"),
-        ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            title: const Text("Hello John Doe"),
+            actions: [
+              IconButton(
+                tooltip: "Logout",
+                onPressed: _handle_logout,
+                icon: Icon(
+                  Icons.logout_rounded,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              )
+            ],
+          ),
+        ],
       ),
     );
   }

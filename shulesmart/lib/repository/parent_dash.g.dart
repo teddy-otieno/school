@@ -58,3 +58,43 @@ Map<String, dynamic> _$StudentTransactionToJson(StudentTransaction instance) =>
       'debit_entry': instance.debit_entry?.toJson(),
       'credit_entry': instance.credit_entry?.toJson(),
     };
+
+StudentBalanceData _$StudentBalanceDataFromJson(Map<String, dynamic> json) =>
+    StudentBalanceData(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      balance: json['balance'] as String,
+      status: $enumDecode(_$StudentAccountStatusEnumMap, json['status']),
+    );
+
+Map<String, dynamic> _$StudentBalanceDataToJson(StudentBalanceData instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'balance': instance.balance,
+      'status': _$StudentAccountStatusEnumMap[instance.status]!,
+    };
+
+const _$StudentAccountStatusEnumMap = {
+  StudentAccountStatus.low: 'LOW',
+  StudentAccountStatus.ok: 'OK',
+};
+
+ParentInformaticData _$ParentInformaticDataFromJson(
+        Map<String, dynamic> json) =>
+    ParentInformaticData(
+      student_balances: (json['student_balances'] as List<dynamic>)
+          .map((e) => StudentBalanceData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      learner_count: json['learner_count'] as int,
+      overall_balance: json['overall_balance'] as String,
+    );
+
+Map<String, dynamic> _$ParentInformaticDataToJson(
+        ParentInformaticData instance) =>
+    <String, dynamic>{
+      'student_balances':
+          instance.student_balances.map((e) => e.toJson()).toList(),
+      'learner_count': instance.learner_count,
+      'overall_balance': instance.overall_balance,
+    };

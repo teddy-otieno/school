@@ -4,6 +4,8 @@ defmodule School.Parent.Parent do
 
   alias School.Accounts.User
 
+  @type t() :: %School.Parent.Parent{}
+
   schema "parents" do
     belongs_to :user, User
     timestamps(type: :utc_datetime)

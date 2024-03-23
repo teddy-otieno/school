@@ -92,6 +92,8 @@ defmodule School.Schools do
   end
 
   def create_student(attrs, %School{id: id}) do
+    #Check for check if profile exists
+    
     %Student{}
     |> Student.changeset(Map.put(attrs, "school_id", id))
     |> Repo.insert()

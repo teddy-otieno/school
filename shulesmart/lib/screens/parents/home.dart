@@ -1,9 +1,12 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:developer';
+import 'package:fpdart/fpdart.dart' as fp;
 import 'package:flutter/material.dart';
 import 'package:shulesmart/models/student.dart';
 import 'package:shulesmart/repository/parent_dash.dart';
 import 'package:shulesmart/screens/parents/assign_child.dart';
+import 'package:shulesmart/screens/parents/informatics.dart';
 import 'package:shulesmart/screens/parents/student_profile.dart';
 import 'package:shulesmart/utils/utils.dart';
 
@@ -17,6 +20,11 @@ class ParentHomeScreen extends StatefulWidget {
 class _ParentHomeScreenState extends State<ParentHomeScreen> {
   List<Student> _your_students = [];
 
+  final GlobalKey<RefreshIndicatorState> _refresh_indicator_key =
+      GlobalKey<RefreshIndicatorState>();
+
+  fp.Option<ParentInformaticData> _informatics_data = const fp.Option.none();
+
   Future<void> _load_students() async {
     var result = await fetch_students_belonging_to_parent();
 
@@ -27,11 +35,17 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  Future<void> _load_parent_informatics() async {
+    var result = await fetch_parent_informatics();
 
-    _load_students();
+    if (result case fp.Left(value: final error) when context.mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error)));
+    }
+
+    setState(() {
+      _informatics_data = result.toOption();
+    });
   }
 
   void _handle_assign_student() {
@@ -40,6 +54,18 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
         builder: (context) => const AssignStudent(),
       ),
     );
+  }
+
+  //Since flutter doesn't have any callbacks. we'll load the data when the state is initialized
+  //TODO: (teddy) Handle the loading state
+  void _load_data() async {
+    await Future.wait([_load_students(), _load_parent_informatics()]);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _load_data();
   }
 
   void _handle_view_student_profile(Student student) {
@@ -54,28 +80,67 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("You Students"),
+        title: const Text("Learners"),
         automaticallyImplyLeading: false,
       ),
       body: RefreshIndicator(
+        key: _refresh_indicator_key,
         onRefresh: () {
-          return _load_students();
+          return Future.wait([_load_students(), _load_parent_informatics()]);
         },
         child: CustomScrollView(
           slivers: [
+            SliverToBoxAdapter(
+              child: _informatics_data.match(
+                () => Container(
+                  padding: const EdgeInsets.all(16),
+                  alignment: Alignment.center,
+                  child: const SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                (value) => ParentInformaticsCard(informatics_data: value),
+              ),
+            ),
+            const SliverToBoxAdapter(child: Divider()),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                child: Text(
+                  "Your Learners",
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+            ),
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 childCount: _your_students.length,
-                (context, index) => ListTile(
-                  leading: const Icon(Icons.person),
-                  title: Text(
-                    "${_your_students[index].first_name} ${_your_students[index].last_name}",
-                  ),
-                  trailing: Text(_your_students[index].balance),
-                  onTap: () {
-                    _handle_view_student_profile(_your_students[index]);
-                  },
-                ),
+                (context, index) {
+                  var item = _your_students[index];
+                  //TODO: Create seperate tiles for low and ok status
+                  return ListTile(
+                    leading: const Icon(Icons.person),
+                    tileColor: item.status == StudentAccountStatus.low
+                        ? Theme.of(context).colorScheme.errorContainer
+                        : null,
+                    title: Text(
+                      "${item.first_name} ${item.last_name}",
+                    ),
+                    trailing: Text(
+                      _your_students[index].balance,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: item.status == StudentAccountStatus.low
+                              ? Theme.of(context).colorScheme.error
+                              : null),
+                    ),
+                    onTap: () {
+                      _handle_view_student_profile(_your_students[index]);
+                    },
+                  );
+                },
               ),
             )
           ],

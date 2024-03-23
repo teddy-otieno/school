@@ -106,7 +106,7 @@ Map<String, dynamic> _$CompletedSaleToJson(CompletedSale instance) =>
       'updated_at': instance.updated_at.toIso8601String(),
     };
 
-VendorAccountState _$VendorAccountBalanceFromJson(Map<String, dynamic> json) =>
+VendorAccountState _$VendorAccountStateFromJson(Map<String, dynamic> json) =>
     VendorAccountState(
       account_balance: json['account_balance'] as String,
       recent_transactions: (json['recent_transactions'] as List<dynamic>)
@@ -114,8 +114,7 @@ VendorAccountState _$VendorAccountBalanceFromJson(Map<String, dynamic> json) =>
           .toList(),
     );
 
-Map<String, dynamic> _$VendorAccountBalanceToJson(
-        VendorAccountState instance) =>
+Map<String, dynamic> _$VendorAccountStateToJson(VendorAccountState instance) =>
     <String, dynamic>{
       'account_balance': instance.account_balance,
       'recent_transactions':

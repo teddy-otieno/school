@@ -28,6 +28,16 @@ defmodule School.Parents do
     |> Multi.insert(:parent, fn %{user: user} ->
       Parent.changeset(%Parent{}, %{"user_id" => user.id})
     end)
+    |> Multi.insert(:account, fn %{parent: parent, user: user} ->
+      Account.changeset(
+        %Account{
+          name: "#{user.first_name} #{user.last_name}",
+          _type: :parent,
+          acc_owner: parent.id
+        },
+        %{}
+      )
+    end)
     |> Repo.transaction()
   end
 
@@ -65,22 +75,38 @@ defmodule School.Parents do
 
     query
     |> Repo.all()
-    |> dbg
   end
 
   def fetch_student_account_and_balance(%Student{id: id} = student) do
+    fetch_account_status =
+      from(trans in AccountTransactions,
+        where: trans.account_id == parent_as(:account).id,
+        select:
+          fragment(
+            "CASE WHEN (sum((?).amount - (?).amount)) > 50000 THEN 'OK' ELSE 'LOW' END",
+            trans.debit,
+            trans.credit
+          )
+      )
+
     query =
       from a in Account,
+        as: :account,
         join: trans in AccountTransactions,
         on: a.id == trans.account_id,
         where: a.acc_owner == ^id and a._type == :student,
-        select: fragment("sum((?).amount) - sum((?).amount)", trans.debit, trans.credit)
+        group_by: [a.id],
+        select:
+          {fragment("COALESCE(SUM((?).amount) - SUM((?).amount))", trans.debit, trans.credit),
+           subquery(fetch_account_status)}
 
-    result =
-      query
-      |> Repo.one()
+    case Repo.one(query) do
+      {balance, status} ->
+        %{student: student, balance: if(is_nil(balance), do: 0, else: balance), status: status}
 
-    %{student: student, balance: if(is_nil(result), do: 0, else: result)}
+      _ ->
+        %{student: student, balance: 0, status: "LOW"}
+    end
   end
 
   def assign_to_parent(%Parent{id: parent_id}, student_id) do
@@ -114,5 +140,76 @@ defmodule School.Parents do
         select: %{debit: trans.debit, credit: trans.credit, created_at: trans.created_at}
 
     Repo.all(query)
+  end
+
+  @type informatics() :: %{
+          total_balance: integer(),
+          learner_count: integer(),
+          student_account_balances: list(%{student: Student.t(), balance: integer()})
+        }
+
+  @doc """
+    Return the total balance,
+    the number of learners
+    status of the students accounts, running low, or good.
+  """
+  @spec get_parent_informatics(Parent.t()) :: informatics()
+  def get_parent_informatics(%Parent{id: parent_id}) do
+    # return total balance for all wallets
+
+    total_balance =
+      from(
+        trans in AccountTransactions,
+        inner_join: account in Account,
+        on: account.id == trans.account_id and account._type == :student,
+        inner_join: student in Student,
+        on: student.id == account.acc_owner,
+        where: student.parent_id == ^parent_id,
+        select: fragment("sum((?).amount - (?).amount)", trans.debit, trans.credit)
+      )
+      |> Repo.one()
+      |> (fn x -> if(is_nil(x), do: 0, else: x) end).()
+
+    number_of_learners =
+      from(student in Student, where: student.parent_id == ^parent_id, select: count(student.id))
+      |> Repo.one()
+
+    fetch_account_balance_subquery =
+      from(trans in AccountTransactions,
+        where: trans.account_id == parent_as(:account).id,
+        select: fragment("sum((?).amount - (?).amount)", trans.debit, trans.credit)
+      )
+
+    fetch_account_status =
+      from(trans in AccountTransactions,
+        where: trans.account_id == parent_as(:account).id,
+        select:
+          fragment(
+            "CASE WHEN (sum((?).amount - (?).amount)) > 50000 THEN 'OK' ELSE 'LOW' END",
+            trans.debit,
+            trans.credit
+          )
+      )
+
+    # FIXME: (teddy) Limit this to the target parent
+    status_of_each_account =
+      from(account in Account,
+        as: :account,
+        inner_join: student in Student,
+        on: student.id == account.acc_owner and account._type == :student,
+        where: student.parent_id == ^parent_id,
+        select: %{
+          student: student,
+          balance: fragment("COALESCE(?, 0)", subquery(fetch_account_balance_subquery)),
+          status: subquery(fetch_account_status)
+        }
+      )
+      |> Repo.all()
+
+    %{
+      total_balance: total_balance,
+      learner_count: number_of_learners,
+      student_account_balances: status_of_each_account
+    }
   end
 end

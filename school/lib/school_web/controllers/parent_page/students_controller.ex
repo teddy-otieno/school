@@ -3,6 +3,8 @@ defmodule SchoolWeb.ParentPage.StudentsController do
   alias School.Parents
 
   def index(conn, _opts) do
+
+    # FIXME: (teddy) Use a join in the query below
     children =
       conn
       |> School.Guardian.Plug.current_resource()

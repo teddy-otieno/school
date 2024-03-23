@@ -1,5 +1,6 @@
 defmodule SchoolWeb.ParentPage.PageController do
   use SchoolWeb, :controller
+  alias SchoolWeb.ParentPage.Views.Informatics
   alias School.Accounts
   alias School.Parents
 
@@ -29,5 +30,22 @@ defmodule SchoolWeb.ParentPage.PageController do
           Jason.encode!(%{errors: errors})
         )
     end
+  end
+
+  def parent_informatics(conn, _params) do
+    informatics_result =
+      conn
+      |> School.Guardian.Plug.current_resource()
+      |> Parents.get_parent_from_user()
+      |> Parents.get_parent_informatics()
+
+    conn
+    |> put_view(Informatics)
+    |> render(:show, informatics: informatics_result)
+  end
+
+  def profile(conn, _params) do
+    conn
+    |> send_resp(200, "Hello world")
   end
 end

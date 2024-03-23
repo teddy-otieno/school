@@ -4,18 +4,48 @@ import 'package:json_annotation/json_annotation.dart';
 
 part "student.g.dart";
 
+@JsonEnum()
+enum StudentAccountStatus {
+  @JsonValue("LOW")
+  low,
+  @JsonValue("OK")
+  ok,
+}
+
 @JsonSerializable()
 class Student {
   int id;
   String first_name, last_name, balance;
+  StudentAccountStatus status;
 
   Student({
     required this.id,
     required this.first_name,
     required this.last_name,
     required this.balance,
+    required this.status,
   });
 
   factory Student.fromJson(Map<String, dynamic> json) =>
       _$StudentFromJson(json);
+}
+
+
+@JsonSerializable(explicitToJson: true)
+class StudentBalanceData {
+  int id;
+  String name, balance;
+  StudentAccountStatus status;
+
+  StudentBalanceData({
+    required this.id,
+    required this.name,
+    required this.balance,
+    required this.status,
+  });
+
+  factory StudentBalanceData.fromJson(Map<String, dynamic> json) =>
+      _$StudentBalanceDataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StudentBalanceDataToJson(this);
 }

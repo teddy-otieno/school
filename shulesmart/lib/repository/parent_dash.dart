@@ -7,6 +7,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:shulesmart/models/student.dart';
 import 'package:shulesmart/repository/conn_client.dart';
 import 'package:shulesmart/utils/utils.dart';
+import 'package:fpdart/fpdart.dart' as fp;
 
 part "parent_dash.g.dart";
 
@@ -185,4 +186,61 @@ Future<Result<List<StudentTransaction>, String>>
     log(e.toString());
     return Result.err("Internet is unavailable");
   }
+}
+
+@JsonSerializable(explicitToJson: true)
+class StudentBalanceData {
+  int id;
+  String name, balance;
+  StudentAccountStatus status;
+
+  StudentBalanceData({
+    required this.id,
+    required this.name,
+    required this.balance,
+    required this.status,
+  });
+
+  factory StudentBalanceData.fromJson(Map<String, dynamic> json) =>
+      _$StudentBalanceDataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StudentBalanceDataToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class ParentInformaticData {
+  List<StudentBalanceData> student_balances;
+  int learner_count;
+  String overall_balance;
+
+  ParentInformaticData({
+    required this.student_balances,
+    required this.learner_count,
+    required this.overall_balance,
+  });
+
+  factory ParentInformaticData.fromJson(Map<String, dynamic> json) =>
+      _$ParentInformaticDataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ParentInformaticDataToJson(this);
+}
+
+Future<fp.Either<String, ParentInformaticData>>
+    fetch_parent_informatics() async {
+  var client = ApiClient.get_instance();
+
+  var response = await fp.TaskEither.tryCatch(
+    () => client.get_with_auth("/api/parents/informatics/"),
+    (e, s) => "Error: $e",
+  ).run();
+
+  return response.flatMap((a) {
+    if (a.statusCode != 200) {
+      log(a.body);
+      return const fp.Left("Something went wrong.");
+    }
+
+    log(a.body);
+    return fp.Right(ParentInformaticData.fromJson(jsonDecode(a.body)["data"]));
+  });
 }

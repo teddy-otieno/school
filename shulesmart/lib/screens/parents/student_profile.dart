@@ -126,8 +126,9 @@ class _StudentProfileViewState extends State<StudentProfileView> {
         },
         child: CustomScrollView(
           slivers: [
-            SliverList.builder(
+            SliverList.separated(
               itemCount: _transactions.length,
+              separatorBuilder: (context, index) => const Divider(),
               itemBuilder: (context, index) {
                 log(_transactions[index].toJson().toString());
 

@@ -20,6 +20,7 @@ defmodule School.Finances do
     %Account{id: mpesa_account_id} =
       from(a in Account, where: a._type == :mpesa and a.acc_owner == 0) |> Repo.one!()
 
+    # We should move from mpesa to parent account, then move the funds from parent to student.
     Multi.new()
     |> Multi.insert(:from_mpesa, fn _ ->
       %AccountTransactions{}
@@ -47,7 +48,7 @@ defmodule School.Finances do
       |> Journal.changeset(%{
         "debit_trans" => student_transacton.id,
         "credit_trans" => mpesa_transaction.id,
-        "description" => "Student Deposit"
+        "description" => "Parent Deposit"
       })
     end)
     |> Repo.transaction()

@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:shulesmart/screens/parents/home.dart';
-import 'package:shulesmart/screens/parents/settings.dart';
+import 'package:shulesmart/screens/parents/you.dart';
 
 class ParentDashboard extends StatefulWidget {
   const ParentDashboard({super.key});
@@ -13,7 +13,7 @@ class ParentDashboard extends StatefulWidget {
 
 class _ParentDashboardState extends State<ParentDashboard> {
   int _current_index = 0;
-  final screens = const [ParentHomeScreen(), SettingsScreen()];
+  final screens = const [ParentHomeScreen(), ParentProfilePage()];
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +34,8 @@ class _ParentDashboardState extends State<ParentDashboard> {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: Icon(Icons.person),
+            label: 'You',
           )
         ],
       ),

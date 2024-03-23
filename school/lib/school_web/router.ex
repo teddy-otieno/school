@@ -139,6 +139,8 @@ defmodule SchoolWeb.Router do
         :list_recent_transactions
 
     post "/deposit", ParentPage.FinanceController, :deposit
+    get "/informatics", ParentPage.PageController, :parent_informatics
+    get "/profile", ParentPage.PageController, :profile
   end
 
   scope "/api/vendors", SchoolWeb do
