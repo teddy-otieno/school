@@ -5,6 +5,8 @@ defmodule School.Money.AccountTransactions do
   alias School.Money.Journal
   alias School.Money.Account
 
+  @type t() :: %School.Money.AccountTransactions{}
+
   schema("account_transactions") do
     field :debit, Money.Ecto.Composite.Type
     field :credit, Money.Ecto.Composite.Type

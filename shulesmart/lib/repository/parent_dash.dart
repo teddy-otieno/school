@@ -4,8 +4,10 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:shulesmart/models/parents.dart';
 import 'package:shulesmart/models/student.dart';
 import 'package:shulesmart/repository/conn_client.dart';
+import 'package:shulesmart/utils/error.dart';
 import 'package:shulesmart/utils/utils.dart';
 import 'package:fpdart/fpdart.dart' as fp;
 
@@ -242,5 +244,22 @@ Future<fp.Either<String, ParentInformaticData>>
 
     log(a.body);
     return fp.Right(ParentInformaticData.fromJson(jsonDecode(a.body)["data"]));
+  });
+}
+
+Future<fp.Either<ShuleSmartError, ParentProfile>>
+    fetch_parent_profile_and_transactions() async {
+  var client = ApiClient.get_instance();
+
+  var response = await fp.TaskEither.tryCatch(
+    () => client.get_with_auth("/api/parents/profile"),
+    (error, stackTrace) => NetworkError() as ShuleSmartError,
+  ).run();
+
+  return response.flatMap((a) {
+    if (a.statusCode != 200) {
+      return fp.Left(ServerError(error: a.body) as ShuleSmartError);
+    }
+    return fp.Right(ParentProfile.fromJson(jsonDecode(a.body)["data"]));
   });
 }

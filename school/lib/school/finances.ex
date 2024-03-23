@@ -8,8 +8,10 @@ defmodule School.Finances do
   alias School.School.Student
   alias School.Money.Account
   alias School.School.Vendor
+  alias School.Parent.Parent
 
-  def deposit_to_sudent_account(student_id, amount) when is_number(amount) do
+  def deposit_to_sudent_account(%Parent{id: parent_id}, student_id, amount)
+      when is_number(amount) do
     %Student{id: id} = from(s in Student, where: s.id == ^student_id) |> Repo.one!()
 
     %Account{id: student_account_id} =
@@ -20,37 +22,76 @@ defmodule School.Finances do
     %Account{id: mpesa_account_id} =
       from(a in Account, where: a._type == :mpesa and a.acc_owner == 0) |> Repo.one!()
 
-    # We should move from mpesa to parent account, then move the funds from parent to student.
-    Multi.new()
-    |> Multi.insert(:from_mpesa, fn _ ->
-      %AccountTransactions{}
-      |> AccountTransactions.changeset(%{
-        "credit" => amount,
-        "debit" => Money.new(0),
-        "account_id" => mpesa_account_id
-      })
-    end)
-    |> Multi.insert(:to_student_account, fn _ ->
-      %AccountTransactions{}
-      |> AccountTransactions.changeset(%{
-        "credit" => Money.new(0),
-        "debit" => amount,
-        "account_id" => student_account_id
-      })
-    end)
-    |> Multi.insert(:append_to_journal, fn params ->
-      %{
-        to_student_account: student_transacton,
-        from_mpesa: mpesa_transaction
-      } = params
+    %Account{id: parent_account_id} =
+      from(a in Account, where: a._type == :parent and a.acc_owner == ^parent_id) |> Repo.one!()
 
-      %Journal{}
-      |> Journal.changeset(%{
-        "debit_trans" => student_transacton.id,
-        "credit_trans" => mpesa_transaction.id,
-        "description" => "Parent Deposit"
-      })
-    end)
+    # FIXME: (teddy) We should move from mpesa to parent account, then move the funds from parent to student.
+
+    mpesa_to_parent_multi =
+      Multi.new()
+      |> Multi.insert(:from_mpesa, fn _ ->
+        %AccountTransactions{}
+        |> AccountTransactions.changeset(%{
+          "credit" => amount,
+          "debit" => Money.new(0),
+          "account_id" => mpesa_account_id
+        })
+      end)
+      |> Multi.insert(:to_parent_account, fn _ ->
+        %AccountTransactions{}
+        |> AccountTransactions.changeset(%{
+          "credit" => Money.new(0),
+          "debit" => amount,
+          "account_id" => parent_account_id
+        })
+      end)
+      |> Multi.insert(:append_to_journal_parent, fn params ->
+        %{
+          to_parent_account: parent_transacton,
+          from_mpesa: mpesa_transaction
+        } = params
+
+        %Journal{}
+        |> Journal.changeset(%{
+          "debit_trans" => parent_transacton.id,
+          "credit_trans" => mpesa_transaction.id,
+          "description" => "Mpesa Deposit"
+        })
+      end)
+
+    parent_to_student_multi =
+      Multi.new()
+      |> Multi.insert(:from_parent, fn _ ->
+        %AccountTransactions{}
+        |> AccountTransactions.changeset(%{
+          "credit" => amount,
+          "debit" => Money.new(0),
+          "account_id" => parent_account_id
+        })
+      end)
+      |> Multi.insert(:to_student_account, fn _ ->
+        %AccountTransactions{}
+        |> AccountTransactions.changeset(%{
+          "credit" => Money.new(0),
+          "debit" => amount,
+          "account_id" => student_account_id
+        })
+      end)
+      |> Multi.insert(:append_to_journal, fn params ->
+        %{
+          to_student_account: student_transacton,
+          from_parent: parent_transaction
+        } = params
+
+        %Journal{}
+        |> Journal.changeset(%{
+          "debit_trans" => student_transacton.id,
+          "credit_trans" => parent_transaction.id,
+          "description" => "Parent Deposit"
+        })
+      end)
+
+    Multi.append(mpesa_to_parent_multi, parent_to_student_multi)
     |> Repo.transaction()
   end
 

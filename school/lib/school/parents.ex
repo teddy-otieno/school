@@ -1,6 +1,7 @@
 defmodule School.Parents do
   import Ecto.Query, warn: false
   require Logger
+  alias School.Money.Journal
   alias School.Repo
   alias Ecto.Multi
 
@@ -210,6 +211,29 @@ defmodule School.Parents do
       total_balance: total_balance,
       learner_count: number_of_learners,
       student_account_balances: status_of_each_account
+    }
+  end
+
+  @type profile_data() :: %{transaction_history: AccountTransactions.t(), parent: Parent.t()}
+
+  @spec load_parent_profile_and_transactions(Parent.t()) :: profile_data()
+  def load_parent_profile_and_transactions(%Parent{id: parent_id} = parent) do
+    # TODO: (teddyy) Add pagination
+    # NOTE: (Teddy) We're remove duplicated transactions
+    transaction_history =
+      from(trans in AccountTransactions,
+        inner_join: account in Account,
+        on:
+          trans.account_id == account.id and account._type == :parent and
+            account.acc_owner == ^parent_id,
+        order_by: [desc: trans.inserted_at, desc: trans.id],
+        preload: [:debit_entry, :credit_entry]
+      )
+      |> Repo.all()
+
+    %{
+      transaction_history: transaction_history,
+      parent: parent |> Repo.preload(:user)
     }
   end
 end

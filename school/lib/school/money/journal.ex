@@ -1,7 +1,10 @@
 defmodule School.Money.Journal do
-  alias School.Money.AccountTransactions
   use Ecto.Schema
   import Ecto.Changeset
+
+  alias School.Money.AccountTransactions
+
+  @type t() :: %School.Money.Journal{}
 
   schema "journal" do
     field :description, :string

@@ -1,13 +1,19 @@
 defmodule SchoolWeb.ParentPage.FinanceController do
-  alias School.Finances
   use SchoolWeb, :controller
+
+  alias School.Finances
+  alias School.Parents
 
   def deposit(conn, %{"student" => student_id, "amount" => amount}) do
     # Move the funds the redirect
     {amount_int, _rem} =
       unless(is_integer(amount), do: Integer.parse(amount), else: {amount, nil})
 
-    result = Finances.deposit_to_sudent_account(student_id, amount_int)
+    result = 
+      conn
+      |> School.Guardian.Plug.current_resource()
+      |> Parents.get_parent_from_user()
+      |> Finances.deposit_to_sudent_account(student_id, amount_int)
 
     case result do
       {:ok, _params} ->

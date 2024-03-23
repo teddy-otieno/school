@@ -1,6 +1,6 @@
 defmodule SchoolWeb.ParentPage.PageController do
   use SchoolWeb, :controller
-  alias SchoolWeb.ParentPage.Views.Informatics
+  alias SchoolWeb.ParentPage.Views.{Informatics, ParentProfile}
   alias School.Accounts
   alias School.Parents
 
@@ -45,7 +45,14 @@ defmodule SchoolWeb.ParentPage.PageController do
   end
 
   def profile(conn, _params) do
+    profile =
+      conn
+      |> School.Guardian.Plug.current_resource()
+      |> Parents.get_parent_from_user()
+      |> Parents.load_parent_profile_and_transactions()
+
     conn
-    |> send_resp(200, "Hello world")
+    |> put_view(json: ParentProfile)
+    |> render(:show, %{parent_profile: profile})
   end
 end

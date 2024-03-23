@@ -1,10 +1,15 @@
 
-sealed class ShuleSmartError {}
-
-class ServerError extends ShuleSmartError {
+sealed class ShuleSmartError {
   String error;
+  StackTrace? trace;
 
-  ServerError({required this.error});
+  ShuleSmartError({required this.error, this.trace});
 }
 
-class NetworkError extends ShuleSmartError { }
+class ServerError extends ShuleSmartError {
+  ServerError({required super.error});
+}
+
+class NetworkError extends ShuleSmartError { 
+  NetworkError(): super(error: "Network Error");
+}
