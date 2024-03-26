@@ -9,6 +9,7 @@
         <th>Id</th>
         <th>Name</th>
         <th>Form or Class</th>
+        <th>Edit</th>
       </tr>
     </thead>
     <tbody>
@@ -21,6 +22,7 @@
             <%= "#{student.first_name} #{student.last_name}" %>
           </td>
           <td><%= student.class.label %></td>
+          <td><a href={~p"/school/students/edit/#{student.id}"}>Edit</a></td>
         </tr>
       <% end %>
     </tbody>

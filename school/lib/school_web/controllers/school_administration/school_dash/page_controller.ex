@@ -135,6 +135,43 @@ defmodule SchoolWeb.SchoolAdministration.SchoolDash.PageController do
     |> render(:create_student, token: token, classes: classes_or_forms)
   end
 
+  def edit_student(conn, %{"student_id" => student_id}) do
+    token = Plug.CSRFProtection.get_csrf_token()
+
+    student = Schools.get_student_by_id(student_id)
+
+    classes_or_forms =
+      conn.assigns[:current_user]
+      |> Schools.fetch_school_record_for_user()
+      |> Schools.list_classes_for_user()
+
+    unless is_nil(student) do
+      conn
+      |> put_layout(html: :layout)
+      |> render(:edit_student,
+        token: token,
+        student: student,
+        classes: classes_or_forms,
+        student_id: student_id
+      )
+    else
+      conn
+      |> send_resp(404, "Not Found")
+    end
+  end
+
+  def update_student(conn, %{"student_id" => student_id, "edit_student" => _} = params) do
+    with student when not is_nil(student) <- Schools.get_student_by_id(student_id),
+         {:ok, _} <- Schools.update_student(student, params) do
+      conn
+      |> redirect(to: ~p"/school/students")
+    else
+      _ ->
+        conn
+        |> send_resp(404, "NOT FOUND")
+    end
+  end
+
   def index_parents(conn, _params) do
     parents =
       conn.assigns[:current_user]

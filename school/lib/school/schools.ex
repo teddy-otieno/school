@@ -92,8 +92,8 @@ defmodule School.Schools do
   end
 
   def create_student(attrs, %School{id: id}) do
-    #Check for check if profile exists
-    
+    # Check for check if profile exists
+
     %Student{}
     |> Student.changeset(Map.put(attrs, "school_id", id))
     |> Repo.insert()
@@ -145,5 +145,16 @@ defmodule School.Schools do
       from(class in Class, where: class.id == ^class_id, preload: [students: [parent: [:user]]])
 
     Repo.one(query)
+  end
+
+  def get_student_by_id(student_id) do
+    Repo.get(Student, student_id)
+  end
+
+  @spec update_student(Student.t(), map()) :: {:ok, Student.t()} | {:error, Ecto.Changeset.t()}
+  def update_student(%Student{} = student, attrs) do
+    student
+    |> Student.changeset(attrs)
+    |> Repo.update()
   end
 end

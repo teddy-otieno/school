@@ -12,7 +12,7 @@ defmodule SchoolWeb.ParentPage.PageController do
   def signup(conn, params) do
     with {:ok, %{user: user}} <- Parents.create_parent_account(params) do
       # NOTE: (teddy) send token
-      {:ok, token, claims} = School.Guardian.encode_and_sign(user)
+      {:ok, token, _claims} = School.Guardian.encode_and_sign(user)
 
       conn
       |> put_view(json: SchoolWeb.ParentPage.SignupResponse)

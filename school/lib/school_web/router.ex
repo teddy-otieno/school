@@ -72,32 +72,41 @@ defmodule SchoolWeb.Router do
     # end
   end
 
-  scope "/", SchoolWeb do
+  scope "/school", SchoolWeb do
     pipe_through [:browser, :require_authenticated_user, :require_school_user]
 
-    get "/school/setup", SchoolAdministration.SchoolSetup.PageController, :home
-    post "/school/setup", SchoolAdministration.SchoolSetup.PageController, :setup
-    get "/school/classes", SchoolAdministration.SchoolSetup.PageController, :classes
-    get "/school/classes/create", SchoolAdministration.SchoolSetup.PageController, :create_class
+    get "/setup", SchoolAdministration.SchoolSetup.PageController, :home
+    post "/setup", SchoolAdministration.SchoolSetup.PageController, :setup
+    get "/classes", SchoolAdministration.SchoolSetup.PageController, :classes
+    get "/classes/create", SchoolAdministration.SchoolSetup.PageController, :create_class
 
-    get "school/classes/students/:class_id",
+    get "/classes/students/:class_id",
         SchoolAdministration.SchoolDash.ClassesController,
         :list_students
 
-    get "/school/dash", SchoolAdministration.SchoolDash.PageController, :home
-    get "/school/vendors", SchoolAdministration.SchoolDash.PageController, :vendors
-    get "/school/vendors/create", SchoolAdministration.SchoolDash.PageController, :create_vendor
-    post "/school/vendors/create", SchoolAdministration.SchoolDash.PageController, :create_vendor
+    get "/dash", SchoolAdministration.SchoolDash.PageController, :home
+    get "/vendors", SchoolAdministration.SchoolDash.PageController, :vendors
+    get "/vendors/create", SchoolAdministration.SchoolDash.PageController, :create_vendor
+    post "/vendors/create", SchoolAdministration.SchoolDash.PageController, :create_vendor
 
-    get "/school/vendors/:vendor_id",
+    get "/vendors/:vendor_id",
         SchoolAdministration.SchoolDash.PageController,
         :view_vendor_profile
 
-    get "/school/students", SchoolAdministration.SchoolDash.PageController, :students
-    get "/school/students/create", SchoolAdministration.SchoolDash.PageController, :create_student
-    get "/school/parents", SchoolAdministration.SchoolDash.PageController, :index_parents
+    get "/students", SchoolAdministration.SchoolDash.PageController, :students
+    get "/students/create", SchoolAdministration.SchoolDash.PageController, :create_student
 
-    post "/school/students/create",
+    get "/students/edit/:student_id",
+        SchoolAdministration.SchoolDash.PageController,
+        :edit_student
+
+    post "/students/edit/:student_id",
+        SchoolAdministration.SchoolDash.PageController,
+        :update_student
+
+    get "/parents", SchoolAdministration.SchoolDash.PageController, :index_parents
+
+    post "/students/create",
          SchoolAdministration.SchoolDash.PageController,
          :create_student
   end
