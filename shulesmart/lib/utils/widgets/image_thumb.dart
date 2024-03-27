@@ -5,8 +5,9 @@ import 'package:shulesmart/repository/conn_client.dart';
 
 class ImageThumb extends StatelessWidget {
   final String? image_path;
+  final Icon? default_icon;
 
-  const ImageThumb({super.key, this.image_path});
+  const ImageThumb({super.key, this.image_path, this.default_icon});
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +32,13 @@ class ImageThumb extends StatelessWidget {
         : Container(
             height: 32,
             width: 32,
-            decoration: const BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.all(Radius.circular(8))),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.background,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(8),
+              ),
+            ),
+            child: default_icon,
           );
   }
 }

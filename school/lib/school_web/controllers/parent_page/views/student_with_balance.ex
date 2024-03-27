@@ -1,4 +1,6 @@
 defmodule SchoolWeb.ParentPage.Views.StudentWithBalance do
+  alias School.School.Student
+
   def index(%{students: students}) do
     %{
       data:
@@ -6,22 +8,16 @@ defmodule SchoolWeb.ParentPage.Views.StudentWithBalance do
           %{student: student, balance: balance, status: status} <- students,
           do: data(student, balance, status)
         )
-    } |> dbg
+    }
   end
 
   def show(%{student: %{student: student, balance: balance, status: status}}) do
     %{data: data(student, balance, status)}
   end
 
+  @spec data(Student.t(), any(), String.t()) :: Student.student_data()
   def data(student, balance, status) do
     money_balance = Money.new(balance)
-
-    %{
-      id: student.id,
-      first_name: student.first_name,
-      last_name: student.last_name,
-      balance: Money.to_string(money_balance),
-      status: status
-    }
+    Student.to_data(student, money_balance, status)
   end
 end

@@ -17,6 +17,7 @@ class Student {
   int id;
   String first_name, last_name, balance;
   StudentAccountStatus status;
+  String? image;
 
   Student({
     required this.id,
@@ -24,6 +25,7 @@ class Student {
     required this.last_name,
     required this.balance,
     required this.status,
+    this.image
   });
 
   factory Student.fromJson(Map<String, dynamic> json) =>

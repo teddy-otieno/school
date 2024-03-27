@@ -97,6 +97,7 @@ defmodule SchoolWeb.SchoolAdministration.SchoolDash.PageController do
   end
 
   def create_student(conn, %{"create_student" => _} = params) do
+    # FIXME: (teddy)  Implement profile photo feature
     school =
       conn.assigns[:current_user]
       |> Schools.fetch_school_record_for_user()
@@ -160,9 +161,21 @@ defmodule SchoolWeb.SchoolAdministration.SchoolDash.PageController do
     end
   end
 
+  @spec update_student_profile_image(map()) :: String.t() | nil
+  defp update_student_profile_image(%{"profile_image" => profile_image}) do
+    # Do something important
+    # FIXME: (teddy) on update, delete the previous image
+    SchoolWeb.Utils.save_media(:student, profile_image)
+  end
+
+  @spec update_student_profile_image(map()) :: nil
+  defp update_student_profile_image(_) do
+    nil
+  end
+
   def update_student(conn, %{"student_id" => student_id, "edit_student" => _} = params) do
     with student when not is_nil(student) <- Schools.get_student_by_id(student_id),
-         {:ok, _} <- Schools.update_student(student, params) do
+         {:ok, _} <- Schools.update_student(student, params, update_student_profile_image(params)) do
       conn
       |> redirect(to: ~p"/school/students")
     else

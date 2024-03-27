@@ -73,9 +73,7 @@ defmodule School.Schools do
 
   def fetch_school_record_for_user(user = %User{}) do
     query = from s in School, where: s.account_manager_id == ^user.id, select: s
-
     Repo.one!(query)
-    |> dbg
   end
 
   def create_new_class(params, %School{id: id}) do
@@ -100,7 +98,8 @@ defmodule School.Schools do
   end
 
   def list_students(%School{id: id}) do
-    query = from s in Student, where: s.school_id == ^id, preload: [:class]
+    query =
+      from s in Student, where: s.school_id == ^id, order_by: [asc: s.id], preload: [:class]
 
     query
     |> Repo.all()
@@ -151,10 +150,18 @@ defmodule School.Schools do
     Repo.get(Student, student_id)
   end
 
-  @spec update_student(Student.t(), map()) :: {:ok, Student.t()} | {:error, Ecto.Changeset.t()}
-  def update_student(%Student{} = student, attrs) do
+  @spec update_student(Student.t(), map(), String.t() | nil) ::
+          {:ok, Student.t()} | {:error, Ecto.Changeset.t()}
+  def update_student(%Student{} = student, attrs, image_path) do
+    attrs_with_image =
+      unless is_nil(image_path) do
+        Map.put(attrs, "profile", image_path)
+      else
+        attrs
+      end
+
     student
-    |> Student.changeset(attrs)
+    |> Student.changeset(attrs_with_image)
     |> Repo.update()
   end
 end

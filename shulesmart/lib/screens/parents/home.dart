@@ -9,6 +9,7 @@ import 'package:shulesmart/screens/parents/assign_child.dart';
 import 'package:shulesmart/screens/parents/informatics.dart';
 import 'package:shulesmart/screens/parents/student_profile.dart';
 import 'package:shulesmart/utils/utils.dart';
+import 'package:shulesmart/utils/widgets/image_thumb.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
@@ -122,7 +123,10 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                   var item = _your_students[index];
                   //TODO: Create seperate tiles for low and ok status
                   return ListTile(
-                    leading: const Icon(Icons.person),
+                    leading: ImageThumb(
+                      image_path: item.image,
+                      default_icon: const Icon(Icons.person),
+                    ),
                     tileColor: item.status == StudentAccountStatus.low
                         ? Theme.of(context).colorScheme.errorContainer
                         : null,
@@ -132,9 +136,10 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                     trailing: Text(
                       _your_students[index].balance,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: item.status == StudentAccountStatus.low
-                              ? Theme.of(context).colorScheme.error
-                              : null),
+                            color: item.status == StudentAccountStatus.low
+                                ? Theme.of(context).colorScheme.error
+                                : null,
+                          ),
                     ),
                     onTap: () {
                       _handle_view_student_profile(_your_students[index]);

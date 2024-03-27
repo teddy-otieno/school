@@ -13,8 +13,9 @@ defmodule SchoolWeb.ParentPage.Views.ParentProfile do
   @spec data(Parents.profile_data()) :: journal_transaction_response()
   defp data(profile_data) do
     %{
-      transactions: profile_data.transaction_history |> Enum.map(&render_journal_entries/1)
-    }
+      transactions: profile_data.transaction_history |> Enum.map(&render_journal_entries/1),
+      name: "#{profile_data.parent.user.first_name} #{profile_data.parent.user.last_name}"
+    } |> dbg
   end
 
   defp render_journal_entries(%AccountTransactions{} = entry) do

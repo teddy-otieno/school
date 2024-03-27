@@ -37,9 +37,11 @@ ParentProfile _$ParentProfileFromJson(Map<String, dynamic> json) =>
       transactions: (json['transactions'] as List<dynamic>)
           .map((e) => Transaction.fromJson(e as Map<String, dynamic>))
           .toList(),
+      name: json['name'] as String,
     );
 
 Map<String, dynamic> _$ParentProfileToJson(ParentProfile instance) =>
     <String, dynamic>{
       'transactions': instance.transactions.map((e) => e.toJson()).toList(),
+      'name': instance.name,
     };

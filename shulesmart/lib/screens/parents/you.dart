@@ -5,6 +5,7 @@ import 'package:fpdart/fpdart.dart' as fp;
 import 'package:moment_dart/moment_dart.dart';
 import 'package:shulesmart/models/parents.dart';
 import 'package:shulesmart/repository/parent_dash.dart';
+import 'package:intl/intl.dart' as intl;
 
 class ParentProfilePage extends StatefulWidget {
   const ParentProfilePage({super.key});
@@ -14,11 +15,13 @@ class ParentProfilePage extends StatefulWidget {
 }
 
 class _ParentProfilePageState extends State<ParentProfilePage> {
-  fp.Option<ParentProfile> _parent_profile = fp.Option.none();
+  fp.Option<ParentProfile> _parent_profile = const fp.Option.none();
 
   @override
   void initState() {
     super.initState();
+
+    _load_data();
   }
 
   Future<void> _load_data() async {
@@ -46,8 +49,11 @@ class _ParentProfilePageState extends State<ParentProfilePage> {
       onRefresh: _load_data,
       child: CustomScrollView(
         slivers: [
-          const SliverAppBar(
-            title: Text("Hello world"),
+          SliverAppBar(
+            title: _parent_profile.match(
+              () => const Text("..."),
+              (t) => Text("Hello, ${intl.toBeginningOfSentenceCase(t.name)}"),
+            ),
           ),
           SliverList.separated(
             itemCount:

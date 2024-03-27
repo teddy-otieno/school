@@ -12,6 +12,7 @@ Student _$StudentFromJson(Map<String, dynamic> json) => Student(
       last_name: json['last_name'] as String,
       balance: json['balance'] as String,
       status: $enumDecode(_$StudentAccountStatusEnumMap, json['status']),
+      image: json['image'] as String?,
     );
 
 Map<String, dynamic> _$StudentToJson(Student instance) => <String, dynamic>{
@@ -20,6 +21,7 @@ Map<String, dynamic> _$StudentToJson(Student instance) => <String, dynamic>{
       'last_name': instance.last_name,
       'balance': instance.balance,
       'status': _$StudentAccountStatusEnumMap[instance.status]!,
+      'image': instance.image,
     };
 
 const _$StudentAccountStatusEnumMap = {

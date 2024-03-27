@@ -38,8 +38,9 @@ class Transaction {
 @JsonSerializable(explicitToJson: true)
 class ParentProfile {
   List<Transaction> transactions;
+  String name;
 
-  ParentProfile({required this.transactions});
+  ParentProfile({required this.transactions, required this.name});
 
   factory ParentProfile.fromJson(Map<String, dynamic> json) =>
       _$ParentProfileFromJson(json);
